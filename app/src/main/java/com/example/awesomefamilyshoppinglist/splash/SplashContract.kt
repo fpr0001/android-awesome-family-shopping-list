@@ -10,6 +10,7 @@ object SplashContract {
 
     interface SplashViewModel {
         fun getCurrentUser() : Single<FirebaseUser>
+        fun printAddresses()
 
 //        class Factory(
 //            private val application: Application,
