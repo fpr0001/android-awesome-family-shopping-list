@@ -1,25 +1,19 @@
 package com.example.awesomefamilyshoppinglist.di.modules
 
-import android.app.Application
-import com.example.awesomefamilyshoppinglist.splash.SplashContract
-import com.example.awesomefamilyshoppinglist.splash.SplashVMImpl
-import com.example.awesomefamilyshoppinglist.splash.UserRepository
+import com.example.awesomefamilyshoppinglist.di.SplashSubcomponent
+import com.example.awesomefamilyshoppinglist.splash.SplashActivity
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
+import dagger.android.AndroidInjector
+import dagger.multibindings.ClassKey
+import dagger.multibindings.IntoMap
 
-@Module
-class SplashModule {
+@Module(subcomponents = [SplashSubcomponent::class])
+abstract class SplashModule {
 
-    @Module
-    companion object {
+    @Binds
+    @IntoMap
+    @ClassKey(SplashActivity::class)
+    abstract fun bindSplashActivityInjectorFactory(builder: SplashSubcomponent.Builder): AndroidInjector.Factory<*>
 
-        @Provides
-        @JvmStatic
-        fun providesSplashViewModel(
-            application: Application,
-            repository: UserRepository
-        ): SplashContract.SplashViewModel {
-            return SplashVMImpl(application, repository)
-        }
-    }
 }

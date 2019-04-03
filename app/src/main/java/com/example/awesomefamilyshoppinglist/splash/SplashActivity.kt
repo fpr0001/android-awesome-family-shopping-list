@@ -12,6 +12,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import dagger.android.AndroidInjection
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_splash.*
 import javax.inject.Inject
 
@@ -24,29 +25,19 @@ class SplashActivity : AppCompatActivity() {
     @Inject
     lateinit var vmSplash: SplashContract.SplashViewModel
 
-    lateinit var subcomponent: SplashSubcomponent
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 //        vm = ViewModelProviders.of(this, vmSplashFactory).get(SplashVMImpl::class.java)
-
-        subcomponent = (application as App)
-            .appComponent
-            .splashSubcomponent()
-        subcomponent.inject(this)
 
         setContentView(R.layout.activity_splash)
 
         button.setOnClickListener {
             vmSplash.printAddresses()
-            println((application as App).appComponent)
+            println(vmSplash)
         }
         button2.setOnClickListener {
-            (application as App)
-                .appComponent
-                .splashSubcomponent()
-                .inject(this)
+            AndroidInjection.inject(this)
         }
 
     }
