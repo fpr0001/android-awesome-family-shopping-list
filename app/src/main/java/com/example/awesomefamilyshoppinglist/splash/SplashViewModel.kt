@@ -2,13 +2,16 @@ package com.example.awesomefamilyshoppinglist.splash
 
 import android.app.Application
 import android.content.Intent
+import android.view.View
+import androidx.databinding.ObservableInt
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 import com.example.awesomefamilyshoppinglist.App
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.example.awesomefamilyshoppinglist.util.BaseViewModel
+import com.example.awesomefamilyshoppinglist.util.*
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Single
+import timber.log.Timber
 import javax.inject.Provider
 
 
@@ -21,31 +24,43 @@ object SplashContract {
 
         private val userLiveData = MutableLiveData<FirebaseUser>()
         private val loginIntentLiveData = MutableLiveData<Intent>()
+        private val buttonTryAgainVisibility = ObservableInt(View.GONE)
 
         override val loginIntent: MutableLiveData<Intent> = loginIntentLiveData
         override val user: MutableLiveData<FirebaseUser> = userLiveData
+        override val tryAgainVisibility = buttonTryAgainVisibility
 
         override fun autoLogin() {
+            showProgressBar()
+            buttonTryAgainVisibility.set(View.GONE)
             getCurrentUser()
-                .subscribe({firebaseUser ->
+                .async()
+                .subscribe({ firebaseUser ->
+                    hideProgressBar()
                     userLiveData.value = firebaseUser
-                }, {throwable ->
+                }, { throwable ->
+                    Timber.d(throwable)
+                    hideProgressBar()
                     loginIntentLiveData.value = userRepository.getSignInIntent()
                 })
+                .addTo(compositeDisposable)
         }
-
-
 
         private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentUser()
 
+        override fun enableTryAgain() {
+            buttonTryAgainVisibility.set(View.VISIBLE)
+        }
 
     }
 
-    interface ViewModel {
+    interface ViewModel : BaseViewModelI {
 
-        fun autoLogin()
         val loginIntent: MutableLiveData<Intent>
         val user: MutableLiveData<FirebaseUser>
+        val tryAgainVisibility: ObservableInt
+        fun autoLogin()
+        fun enableTryAgain()
 
         companion object {
 

@@ -4,72 +4,65 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Observer
 import com.example.awesomefamilyshoppinglist.R
-import com.firebase.ui.auth.AuthUI
+import com.example.awesomefamilyshoppinglist.list.ListActivity
+import com.example.awesomefamilyshoppinglist.util.showToast
 import com.firebase.ui.auth.IdpResponse
-import com.google.firebase.auth.FirebaseAuth
 import dagger.android.AndroidInjection
-import kotlinx.android.synthetic.main.activity_splash.*
 import javax.inject.Inject
 
 class SplashActivity : FragmentActivity() {
 
     companion object {
-        const val RC_SIGN_IN = 1
+        const val CODE_SIGN_IN = 1
     }
 
     @Inject
     internal lateinit var vmFactory: SplashContract.ViewModel.Companion.Factory
 
+    lateinit var viewModel: SplashContract.ViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-
-        val vm = vmFactory.getViewModel(this)
-
         setContentView(R.layout.activity_splash)
 
-        button.setOnClickListener {
-//            vmSplash.printAddresses()
-//            println(vmSplash)
-        }
-        button2.setOnClickListener {
-            AndroidInjection.inject(this)
-        }
-
+        viewModel = vmFactory.getViewModel(this)
+        setListeners(viewModel)
+        viewModel.autoLogin()
     }
 
-    private fun loginIfNeeded() {
-        if (FirebaseAuth.getInstance().currentUser == null) {
+    private fun setListeners(vm: SplashContract.ViewModel) {
 
-            val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
+        vm.loginIntent.observe(
+            this,
+            Observer { loginIntent -> startActivityForResult(loginIntent, CODE_SIGN_IN) })
 
-            startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .build(),
-                RC_SIGN_IN
-            )
-        }
+        vm.user.observe(this,
+            Observer { goToListActivity() })
+    }
+
+    private fun goToListActivity() {
+        ListActivity.startActivity(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == CODE_SIGN_IN) {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
-                val user = FirebaseAuth.getInstance().currentUser
-
-                // ...
+                goToListActivity()
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
                 // response.getError().getErrorCode() and handle the error.
-                // ...
+                if (response != null) {
+                    showToast()
+                }
+                viewModel.enableTryAgain()
             }
         }
     }

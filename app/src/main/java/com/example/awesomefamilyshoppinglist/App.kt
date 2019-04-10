@@ -15,9 +15,6 @@ import javax.inject.Inject
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
-
-
-
 class App : Application(), HasActivityInjector {
 
     @Inject

@@ -6,4 +6,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+
+
+    <string name="try_again_button">Try again</string>
+    <string name="general_error_message">Ooops! Something went wrong</string>
 </resources>
