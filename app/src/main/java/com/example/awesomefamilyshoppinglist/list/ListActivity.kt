@@ -9,9 +9,9 @@ class ListActivity : FragmentActivity() {
 
     companion object {
         fun startActivity(context: Context) {
-            context.let {
-                it.startActivity(Intent(it, ListActivity::class.java))
-            }
+            context.startActivity(Intent(context, ListActivity::class.java).also {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
         }
     }
 

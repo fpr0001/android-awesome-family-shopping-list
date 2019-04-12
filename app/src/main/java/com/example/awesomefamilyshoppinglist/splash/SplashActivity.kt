@@ -1,12 +1,14 @@
 package com.example.awesomefamilyshoppinglist.splash
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.list.ListActivity
+import com.example.awesomefamilyshoppinglist.main.MainActivity
 import com.example.awesomefamilyshoppinglist.util.showToast
 import com.firebase.ui.auth.IdpResponse
 import dagger.android.AndroidInjection
@@ -16,6 +18,12 @@ class SplashActivity : FragmentActivity() {
 
     companion object {
         const val CODE_SIGN_IN = 1
+
+        fun startActivity(context: Context) {
+            context.startActivity(Intent(context, SplashActivity::class.java).also {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+        }
     }
 
     @Inject
@@ -29,22 +37,22 @@ class SplashActivity : FragmentActivity() {
         setContentView(R.layout.activity_splash)
 
         viewModel = vmFactory.getViewModel(this)
-        setListeners(viewModel)
+        setListeners()
         viewModel.autoLogin()
     }
 
-    private fun setListeners(vm: SplashContract.ViewModel) {
+    private fun setListeners() {
 
-        vm.loginIntent.observe(
+        viewModel.loginIntent.observe(
             this,
             Observer { loginIntent -> startActivityForResult(loginIntent, CODE_SIGN_IN) })
 
-        vm.user.observe(this,
-            Observer { goToListActivity() })
+        viewModel.user.observe(this,
+            Observer { goToMainActivity() })
     }
 
-    private fun goToListActivity() {
-        ListActivity.startActivity(this)
+    private fun goToMainActivity() {
+        MainActivity.startActivity(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -54,7 +62,7 @@ class SplashActivity : FragmentActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                goToListActivity()
+                goToMainActivity()
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check

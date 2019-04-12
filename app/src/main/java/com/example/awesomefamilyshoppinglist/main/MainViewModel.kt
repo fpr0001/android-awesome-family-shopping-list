@@ -1,39 +1,35 @@
-package com.example.awesomefamilyshoppinglist.splash
+package com.example.awesomefamilyshoppinglist.main
 
 import android.app.Application
-import android.content.Intent
-import android.view.View
-import androidx.databinding.ObservableInt
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.*
-import com.example.awesomefamilyshoppinglist.App
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.example.awesomefamilyshoppinglist.BuildConfig
+import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.example.awesomefamilyshoppinglist.util.*
+import com.example.awesomefamilyshoppinglist.util.BaseViewModel
+import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
+import com.example.awesomefamilyshoppinglist.util.async
+import com.example.awesomefamilyshoppinglist.util.showToast
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Single
 import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 import javax.inject.Provider
 
-
-object SplashContract {
+object MainContract {
 
     internal class ViewModelImpl(
         application: Application,
         private val userRepository: UserRepository
     ) : BaseViewModel(application), ViewModel {
 
-        private val userLiveData = MutableLiveData<FirebaseUser>()
-        private val loginIntentLiveData = MutableLiveData<Intent>()
-        private val buttonTryAgainVisibility = ObservableInt(View.GONE)
+        private val userLiveData = MutableLiveData<FirebaseUser?>()
 
-        override val loginIntent: MutableLiveData<Intent> = loginIntentLiveData
-        override val user: MutableLiveData<FirebaseUser> = userLiveData
-        override val tryAgainVisibility = buttonTryAgainVisibility
+        override val version = "v" + BuildConfig.VERSION_NAME
 
-        override fun autoLogin() {
-            showProgressBar()
-            buttonTryAgainVisibility.set(View.GONE)
+        override fun loadUser() {
             getCurrentUser()
                 .async()
                 .subscribe({ firebaseUser ->
@@ -42,26 +38,39 @@ object SplashContract {
                 }, { throwable ->
                     Timber.d(throwable)
                     hideProgressBar()
-                    loginIntentLiveData.value = userRepository.getSignInIntent()
+                    application().showToast(R.string.failed_to_load_user)
                 })
                 .addTo(compositeDisposable)
         }
 
         private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentUser()
 
-        override fun enableTryAgain() {
-            buttonTryAgainVisibility.set(View.VISIBLE)
+        override fun logout() {
+            showProgressBar()
+            userRepository
+                .logout()
+                .async()
+                .subscribe({
+                    hideProgressBar()
+                    userLiveData.value = null
+                }, { throwable ->
+                    Timber.d(throwable)
+                    hideProgressBar()
+                    userLiveData.value = null
+                })
+                .addTo(compositeDisposable)
         }
+
+        override val user: MutableLiveData<FirebaseUser?> = userLiveData
 
     }
 
     interface ViewModel : BaseViewModelI {
 
-        val loginIntent: MutableLiveData<Intent>
-        val user: MutableLiveData<FirebaseUser>
-        val tryAgainVisibility: ObservableInt
-        fun autoLogin()
-        fun enableTryAgain()
+        val user: MutableLiveData<FirebaseUser?>
+        val version: String
+        fun logout()
+        fun loadUser()
 
         companion object {
 
@@ -79,6 +88,3 @@ object SplashContract {
         }
     }
 }
-
-
-

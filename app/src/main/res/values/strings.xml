@@ -10,4 +10,7 @@
 
     <string name="try_again_button">Try again</string>
     <string name="general_error_message">Ooops! Something went wrong</string>
+    <string name="failed_to_load_user">Failed to load user</string>
+    <string name="history">History</string>
+    <string name="logout">Logout</string>
 </resources>

@@ -17,5 +17,3 @@ fun <T> Single<T>.inIo(): Single<T> = subscribeOn(Schedulers.io()).observeOn(Sch
 fun Completable.inIo(): Completable = subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
 
 fun Completable.async(): Completable = subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-
-fun Disposable.addTo(compositeDisposable: CompositeDisposable) = compositeDisposable.add(this)
