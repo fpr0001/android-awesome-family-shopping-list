@@ -38,6 +38,7 @@ crashlytics {
 
 ext {
     dagger_version = '2.21'
+    mockito_version = '2.27.0'
 }
 
 repositories {
@@ -89,6 +90,8 @@ dependencies {
 
     //tests
     testImplementation 'junit:junit:4.12'
+    testImplementation "org.mockito:mockito-core:$mockito_version"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_version"
     androidTestImplementation 'androidx.test:runner:1.2.0-alpha03'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0-alpha03'
 }

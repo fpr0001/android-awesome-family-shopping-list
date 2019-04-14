@@ -25,11 +25,13 @@ import kotlinx.android.synthetic.main.nav_header_main.view.*
 import javax.inject.Inject
 
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
     internal lateinit var vmFactory: MainContract.ViewModel.Companion.Factory
+
+    @Inject
+    internal lateinit var router: MainContract.Router
 
     lateinit var viewModel: MainContract.ViewModel
 
@@ -51,7 +53,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mainBinding.lifecycleOwner = this
         mainBinding.viewModel = viewModel
 
-        val navigationHeaderBinding: NavHeaderMainBinding = DataBindingUtil.inflate(layoutInflater, R.layout.nav_header_main, mainBinding.navView, false)
+        val navigationHeaderBinding: NavHeaderMainBinding =
+            DataBindingUtil.inflate(layoutInflater, R.layout.nav_header_main, mainBinding.navView, false)
         navigationHeaderBinding.lifecycleOwner = this
         navigationHeaderBinding.viewModel = viewModel
         mainBinding.navView.addHeaderView(navigationHeaderBinding.root)
@@ -83,8 +86,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.imageView
     }
 
-    fun setListeners() {
-        viewModel.user.observe(this, Observer { user -> if (user == null) SplashActivity.startActivity(this) })
+    private fun setListeners() {
+        viewModel.user.observe(this, Observer { user -> if (user == null) router.goToSplash() })
     }
 
     override fun onBackPressed() {
@@ -105,9 +108,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
-            R.id.action_settings -> return true
-            else -> return super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.action_settings -> true
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -115,10 +118,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.action_history -> {
-
+                router.goToHistory()
             }
             R.id.action_logout -> {
-
+                viewModel.logout()
             }
         }
 
