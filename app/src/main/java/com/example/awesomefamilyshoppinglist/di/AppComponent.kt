@@ -3,6 +3,7 @@ package com.example.awesomefamilyshoppinglist.di
 import com.example.awesomefamilyshoppinglist.App
 import com.example.awesomefamilyshoppinglist.di.modules.ApplicationModule
 import com.example.awesomefamilyshoppinglist.di.modules.RepositoryModule
+import com.example.awesomefamilyshoppinglist.di.modules.UtilsModule
 import com.example.awesomefamilyshoppinglist.main.MainModule
 import com.example.awesomefamilyshoppinglist.splash.SplashModule
 import dagger.Component
@@ -15,6 +16,7 @@ import javax.inject.Singleton
     modules = [
         ApplicationModule::class,
         RepositoryModule::class,
+        UtilsModule::class,
         AndroidInjectionModule::class,
         AndroidSupportInjectionModule::class,
         SplashModule::class,

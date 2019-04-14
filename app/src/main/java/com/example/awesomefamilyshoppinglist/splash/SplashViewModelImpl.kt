@@ -31,11 +31,11 @@ internal class SplashViewModelImpl(
             .async(getCurrentUser())
             .subscribe({ firebaseUser ->
                 hideProgressBar()
-                userLiveData.value = firebaseUser
+                userLiveData.postValue(firebaseUser)
             }, { throwable ->
                 Timber.d(throwable)
                 hideProgressBar()
-                userLiveData.value = null
+                userLiveData.postValue(null)
             })
             .addTo(compositeDisposable)
     }

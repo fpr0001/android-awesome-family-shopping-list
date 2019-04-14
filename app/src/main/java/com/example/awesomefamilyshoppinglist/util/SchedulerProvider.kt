@@ -6,6 +6,8 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.schedulers.TestScheduler
+import javax.inject.Inject
 import javax.inject.Provider
 
 interface SchedulerProvider {
@@ -14,10 +16,25 @@ interface SchedulerProvider {
     fun async(completable: Completable): Completable
 }
 
-abstract class BaseSchedulerImpl(
-    protected val providerIo: Provider<Scheduler>,
-    protected val providerMain: Provider<Scheduler>
-) : SchedulerProvider {
+abstract class BaseSchedulerImpl : SchedulerProvider {
+
+    private lateinit var providerIo: Provider<Scheduler>
+    private lateinit var providerMain: Provider<Scheduler>
+
+    protected constructor()
+
+    constructor(
+        providerIo: Provider<Scheduler>,
+        providerMain: Provider<Scheduler>
+    ) : this() {
+        this.providerIo = providerIo
+        this.providerMain = providerMain
+    }
+
+    constructor(provider: Provider<Scheduler>) : this() {
+        this.providerMain = provider
+        this.providerIo = provider
+    }
 
     override fun async(completable: Completable): Completable {
         return completable
@@ -38,10 +55,8 @@ abstract class BaseSchedulerImpl(
     }
 }
 
-open class SchedulerProviderImpl : BaseSchedulerImpl(
+open class SchedulerProviderImpl @Inject constructor() : BaseSchedulerImpl(
     providerIo = Provider { Schedulers.io() },
     providerMain = Provider { AndroidSchedulers.mainThread() })
 
-open class SchedulerProviderTestImpl : BaseSchedulerImpl(
-    providerIo = Provider { Schedulers.trampoline() },
-    providerMain = Provider { AndroidSchedulers.mainThread() })
+open class SchedulerProviderTestImpl : BaseSchedulerImpl(Provider { Schedulers.trampoline() })
