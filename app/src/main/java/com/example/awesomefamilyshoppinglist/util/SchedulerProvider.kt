@@ -6,7 +6,6 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.TestScheduler
 import javax.inject.Inject
 import javax.inject.Provider
 
