@@ -7,8 +7,6 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import com.example.awesomefamilyshoppinglist.R
-import com.example.awesomefamilyshoppinglist.list.ListActivity
-import com.example.awesomefamilyshoppinglist.main.MainActivity
 import com.example.awesomefamilyshoppinglist.splash.SplashContract.Router.Companion.CODE_SIGN_IN
 import com.example.awesomefamilyshoppinglist.util.showToast
 import com.firebase.ui.auth.IdpResponse
@@ -38,6 +36,10 @@ class SplashActivity : FragmentActivity() {
         setContentView(R.layout.activity_splash)
 
         viewModel = vmFactory.getViewModel(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
         setListeners()
         viewModel.autoLogin()
     }

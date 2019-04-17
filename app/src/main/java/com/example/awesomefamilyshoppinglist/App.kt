@@ -5,7 +5,6 @@ import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.ndk.CrashlyticsNdk
 import com.example.awesomefamilyshoppinglist.di.DaggerAppComponent
-import com.example.awesomefamilyshoppinglist.di.modules.ApplicationModule
 import com.example.awesomefamilyshoppinglist.util.CrashReportingTree
 import dagger.android.AndroidInjector
 import dagger.android.HasActivityInjector
@@ -35,7 +34,7 @@ class App : Application(), HasActivityInjector {
 
         DaggerAppComponent
             .builder()
-            .applicationModule(ApplicationModule(this))
+            .create(this)
             .build()
             .inject(this)
 

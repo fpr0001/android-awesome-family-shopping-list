@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.splash
 
 import android.app.Application
+import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderImpl
@@ -44,5 +45,11 @@ class SplashViewModelImplTest {
         `when`(userRepository.getCurrentUser()).thenReturn(Single.just(firebaseUser))
         vm.autoLogin()
         assertEquals(vm.user.value, firebaseUser)
+    }
+
+    @Test
+    fun enable_try_again_button() {
+        vm.enableTryAgain()
+        assertEquals(vm.tryAgainVisibility.get(), View.VISIBLE)
     }
 }

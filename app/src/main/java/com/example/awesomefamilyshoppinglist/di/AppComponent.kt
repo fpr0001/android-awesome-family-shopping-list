@@ -1,28 +1,32 @@
 package com.example.awesomefamilyshoppinglist.di
 
+import android.app.Application
 import com.example.awesomefamilyshoppinglist.App
-import com.example.awesomefamilyshoppinglist.di.modules.ApplicationModule
+import com.example.awesomefamilyshoppinglist.di.modules.ActivitiesBindingModule
 import com.example.awesomefamilyshoppinglist.di.modules.RepositoryModule
 import com.example.awesomefamilyshoppinglist.di.modules.UtilsModule
-import com.example.awesomefamilyshoppinglist.main.MainModule
-import com.example.awesomefamilyshoppinglist.splash.SplashModule
+import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
-import dagger.android.support.AndroidSupportInjectionModule
+import dagger.android.AndroidInjector
 import javax.inject.Singleton
 
 @Singleton
 @Component(
     modules = [
-        ApplicationModule::class,
         RepositoryModule::class,
         UtilsModule::class,
         AndroidInjectionModule::class,
-        AndroidSupportInjectionModule::class,
-        SplashModule::class,
-        MainModule::class
+        ActivitiesBindingModule::class
     ]
 )
-interface AppComponent {
-    fun inject(application: App)
+interface AppComponent : AndroidInjector<App> {
+
+    @Component.Builder
+    interface Builder {
+        @BindsInstance
+        fun create(app: Application): Builder
+
+        fun build(): AppComponent
+    }
 }

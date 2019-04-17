@@ -12,7 +12,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 
-internal class SplashViewModelImpl(
+open class SplashViewModelImpl(
     application: Application,
     private val userRepository: UserRepository,
     private val schedulerProvider: SchedulerProvider
