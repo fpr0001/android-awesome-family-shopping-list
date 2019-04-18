@@ -28,7 +28,7 @@ abstract class SplashModule {
         @JvmStatic
         @Provides
         internal fun providesSplashViewModelFactory(provider: Provider<SplashViewModelImpl>) =
-            SplashContract.ViewModel.Companion.Factory(provider)
+            SplashContract.ViewModelFactory(provider)
 
         @JvmStatic
         @Provides

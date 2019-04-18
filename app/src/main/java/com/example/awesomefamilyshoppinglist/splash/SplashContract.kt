@@ -27,19 +27,16 @@ object SplashContract {
         val tryAgainVisibility: ObservableInt
         fun autoLogin()
         fun enableTryAgain()
+    }
 
-        companion object {
+    @Suppress("UNCHECKED_CAST")
+    open class ViewModelFactory(private val provider: Provider<SplashViewModelImpl>) : ViewModelProvider.Factory {
+        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+            return provider.get() as T
+        }
 
-            @Suppress("UNCHECKED_CAST")
-            internal class Factory(private val provider: Provider<SplashViewModelImpl>) : ViewModelProvider.Factory {
-                override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
-                    return provider.get() as T
-                }
-
-                fun getViewModel(activity: FragmentActivity): ViewModel {
-                    return ViewModelProviders.of(activity, this).get(SplashViewModelImpl::class.java)
-                }
-            }
+        fun getViewModel(activity: FragmentActivity): ViewModel {
+            return ViewModelProviders.of(activity, this).get(SplashViewModelImpl::class.java)
         }
     }
 }

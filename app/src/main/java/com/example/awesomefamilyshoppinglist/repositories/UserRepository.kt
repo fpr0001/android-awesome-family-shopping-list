@@ -19,7 +19,7 @@ interface UserRepository {
     fun logout(): Completable
 }
 
-open class UserRepositoryImpl @Inject constructor() : UserRepository {
+open class UserRepositoryImpl : UserRepository {
 
     override fun getSignInIntent(): Intent {
         val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())

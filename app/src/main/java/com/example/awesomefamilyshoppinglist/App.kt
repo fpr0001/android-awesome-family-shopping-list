@@ -34,7 +34,7 @@ class App : Application(), HasActivityInjector {
 
         DaggerAppComponent
             .builder()
-            .create(this)
+            .provideApplication(this)
             .build()
             .inject(this)
 

@@ -4,13 +4,14 @@ import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-abstract class RepositoryModule {
+open class RepositoryModule {
 
-    @Binds
+    @Provides
     @Singleton
-    abstract fun bindsUserRepository(impl: UserRepositoryImpl): UserRepository
+    open fun providesUserRepository(): UserRepository = UserRepositoryImpl()
 
 }

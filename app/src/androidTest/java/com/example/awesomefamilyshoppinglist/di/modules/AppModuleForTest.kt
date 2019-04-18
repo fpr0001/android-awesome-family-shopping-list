@@ -24,7 +24,7 @@ open class AppModuleForTest {
 
     @Provides
     @Singleton
-    fun providesUserRepository(): UserRepository = UserRepositoryImpl()
+    open fun providesUserRepository(): UserRepository = UserRepositoryImpl()
 
     @Provides
     internal fun providesSplashViewModel(
@@ -37,5 +37,5 @@ open class AppModuleForTest {
 
     @Provides
     internal fun providesSplashViewModelFactory(provider: Provider<SplashViewModelImpl>) =
-        SplashContract.ViewModel.Companion.Factory(provider)
+        SplashContract.ViewModelFactory(provider)
 }
