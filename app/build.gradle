@@ -17,8 +17,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner 'com.github.tmurakami.dexopener.DexOpenerAndroidJUnitRunner'
-//        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -39,7 +38,7 @@ crashlytics {
 }
 
 ext {
-    dagger_version = '2.21'
+    dagger_version = '2.22.1'
     dagger_mock_version = '0.8.5'
     mockito_version = '2.27.0'
     espresso_version = '3.2.0-alpha03'
@@ -85,10 +84,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
 
     //dagger
-//    implementation "com.google.dagger:dagger-android:$dagger_version"
-//    implementation "com.google.dagger:dagger-android-support:$dagger_version"
-//    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
-//    kapt "com.google.dagger:dagger-compiler:$dagger_version"
+    implementation "com.google.dagger:dagger-android:$dagger_version"
+    implementation "com.google.dagger:dagger-android-support:$dagger_version"
+    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
+    kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     //glide
     implementation 'com.github.bumptech.glide:glide:4.9.0'
@@ -96,7 +95,7 @@ dependencies {
 
     //mockito
 //    testImplementation "org.mockito:mockito-core:$mockito_version" //no uncomment
-//    androidTestImplementation "org.mockito:mockito-android:$mockito_version"
+    androidTestImplementation "org.mockito:mockito-android:$mockito_version"
 
     //for InstantTaskExecutorRule
     androidTestImplementation 'android.arch.core:core-testing:1.1.1'
@@ -109,29 +108,12 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
     implementation "androidx.test.espresso:espresso-idling-resource:$espresso_version"
 
-//    kaptAndroidTest "com.google.dagger:dagger-android-processor:$dagger_version"
-//    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
-//    androidTestImplementation "com.github.fabioCollini.daggermock:daggermock:$dagger_mock_version"
-//    androidTestImplementation "com.github.fabioCollini.daggermock:daggermock-kotlin:$dagger_mock_version"
+    kaptAndroidTest "com.google.dagger:dagger-android-processor:$dagger_version"
+    kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
+    androidTestImplementation "com.github.fabioCollini.daggermock:daggermock:$dagger_mock_version"
+    androidTestImplementation "com.github.fabioCollini.daggermock:daggermock-kotlin:$dagger_mock_version"
 //
 //    androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version" //for class.qualifiedname
-
-    androidTestImplementation 'com.github.tmurakami:dexopener:0.12.1'
-    kapt 'com.google.dagger:dagger-compiler:2.15'
-    kapt 'com.google.dagger:dagger-android-processor:2.15'
-    implementation 'com.google.dagger:dagger-android:2.15'
-    implementation 'com.google.dagger:dagger-android-support:2.15'
-    kaptAndroidTest 'com.google.dagger:dagger-compiler:2.15'
-    kaptAndroidTest 'com.google.dagger:dagger-android-processor:2.15'
-
-    /* Dagger mock */
-    testImplementation 'com.github.fabioCollini.daggermock:daggermock:0.8.4'
-    testImplementation 'com.github.fabioCollini.daggermock:daggermock-kotlin:0.8.4'
-    androidTestImplementation 'com.github.fabioCollini.daggermock:daggermock:0.8.4'
-    androidTestImplementation 'com.github.fabioCollini.daggermock:daggermock-kotlin:0.8.4'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    androidTestImplementation "org.mockito:mockito-android:2.18.3"
 }
 
 apply plugin: 'com.google.gms.google-services'

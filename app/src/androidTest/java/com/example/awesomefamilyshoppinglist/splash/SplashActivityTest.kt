@@ -28,15 +28,13 @@ import org.mockito.Mockito.mock
 @RunWith(AndroidJUnit4::class)
 class SplashActivityTest {
 
-    @Rule
-    @JvmField
+    @get:Rule
     var ruleForDagger = espressoDaggerMockRule()
 
     @get:Rule
     var ruleForLiveData = InstantTaskExecutorRule()
 
-    @Rule
-    @JvmField
+    @get:Rule
     val activityRule = IntentsTestRule<SplashActivity>(SplashActivity::class.java, false, false)
 
     @Mock
