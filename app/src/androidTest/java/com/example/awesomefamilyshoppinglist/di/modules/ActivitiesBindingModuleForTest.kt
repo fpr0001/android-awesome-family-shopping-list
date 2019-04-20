@@ -10,7 +10,7 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class ActivitiesBindingModuleForTest {
 
-    @ContributesAndroidInjector(modules = [SplashRouterModule::class])
+    @ContributesAndroidInjector
     abstract fun bindSplash(): SplashActivity
 
 //    @ContributesAndroidInjector

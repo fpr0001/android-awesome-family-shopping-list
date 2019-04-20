@@ -97,9 +97,6 @@ dependencies {
 //    testImplementation "org.mockito:mockito-core:$mockito_version" //no uncomment
     androidTestImplementation "org.mockito:mockito-android:$mockito_version"
 
-    //for InstantTaskExecutorRule
-    androidTestImplementation 'android.arch.core:core-testing:1.1.1'
-
     //espresso
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test:rules:1.1.1'
@@ -108,11 +105,14 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-intents:$espresso_version"
     implementation "androidx.test.espresso:espresso-idling-resource:$espresso_version"
 
+    //dagger for tests
     kaptAndroidTest "com.google.dagger:dagger-android-processor:$dagger_version"
     kaptAndroidTest "com.google.dagger:dagger-compiler:$dagger_version"
     androidTestImplementation "com.github.fabioCollini.daggermock:daggermock:$dagger_mock_version"
     androidTestImplementation "com.github.fabioCollini.daggermock:daggermock-kotlin:$dagger_mock_version"
-//
+
+    androidTestImplementation 'android.arch.core:core-testing:1.1.1' //for InstantTaskExecutorRule
+
 //    androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version" //for class.qualifiedname
 }
 

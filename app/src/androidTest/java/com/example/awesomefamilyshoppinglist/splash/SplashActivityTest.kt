@@ -3,13 +3,11 @@ package com.example.awesomefamilyshoppinglist.splash
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
+import androidx.test.rule.ActivityTestRule
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.utils.espressoDaggerMockRule
@@ -21,8 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.*
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
@@ -35,10 +32,13 @@ class SplashActivityTest {
     var ruleForLiveData = InstantTaskExecutorRule()
 
     @get:Rule
-    val activityRule = IntentsTestRule<SplashActivity>(SplashActivity::class.java, false, false)
+    val activityRule = ActivityTestRule<SplashActivity>(SplashActivity::class.java, false, false)
 
     @Mock
     private lateinit var userRepository: UserRepository
+
+    @Mock
+    private lateinit var splashRouter: SplashContract.Router
 
     @Test
     fun test_initial_state() {
@@ -51,7 +51,7 @@ class SplashActivityTest {
     fun test_user_already_logged_in() {
         `when`(userRepository.getCurrentUser()).thenReturn(Single.just(mock(FirebaseUser::class.java)))
         activityRule.launchActivity(null)
-        intended(hasComponent(SplashActivity::class.java.name))
+        verify(splashRouter).goToMain()
 //        onView(withId(R.id.button)).perform(click())
     }
 
