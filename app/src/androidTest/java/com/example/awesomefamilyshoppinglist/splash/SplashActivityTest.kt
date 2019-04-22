@@ -20,6 +20,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
+import org.mockito.Spy
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
@@ -41,23 +42,28 @@ class SplashActivityTest {
     private lateinit var splashRouter: SplashContract.Router
 
     @Test
-    fun test_initial_state() {
+    fun test_VisibilityOfViews_When_InitialState() {
+        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        doNothing().`when`(splashRouter).goToLogin()
+        activityRule.launchActivity(null)
         onView(withId(R.id.button)).isGone()
-        onView(withId(R.id.progressBar)).isVisible()
+        onView(withId(R.id.progressBar)).isGone()
         onView(withId(R.id.imageView)).check(matches(isDisplayed()))
     }
 
     @Test
-    fun test_user_already_logged_in() {
+    fun should_LaunchMain_When_UserIsLoggedIn() {
         `when`(userRepository.getCurrentUser()).thenReturn(Single.just(mock(FirebaseUser::class.java)))
         activityRule.launchActivity(null)
         verify(splashRouter).goToMain()
-//        onView(withId(R.id.button)).perform(click())
+    }
+
+    @Test
+    fun should_LaunchLogin_When_UserIsLoggedOut() {
+        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        activityRule.launchActivity(null)
+        verify(splashRouter).goToLogin()
     }
 
 
-//
-//    @After
-//    fun tearDown() {
-//    }
 }

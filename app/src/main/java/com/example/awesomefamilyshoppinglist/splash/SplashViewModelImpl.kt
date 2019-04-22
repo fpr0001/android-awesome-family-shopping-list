@@ -19,14 +19,13 @@ open class SplashViewModelImpl(
     ) : BaseViewModel(application), SplashContract.ViewModel {
 
     private val userLiveData = MutableLiveData<FirebaseUser?>()
-    private val buttonTryAgainVisibility = ObservableInt(View.GONE)
 
     override val user: MutableLiveData<FirebaseUser?> = userLiveData
-    override val tryAgainVisibility = buttonTryAgainVisibility
+    override val tryAgainVisibility = ObservableInt(View.GONE)
 
     override fun autoLogin() {
         showProgressBar()
-        buttonTryAgainVisibility.set(View.GONE)
+        tryAgainVisibility.set(View.GONE)
         schedulerProvider
             .async(getCurrentUser())
             .subscribe({ firebaseUser ->
@@ -43,6 +42,6 @@ open class SplashViewModelImpl(
     private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentUser()
 
     override fun enableTryAgain() {
-        buttonTryAgainVisibility.set(View.VISIBLE)
+        tryAgainVisibility.set(View.VISIBLE)
     }
 }

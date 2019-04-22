@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import com.example.awesomefamilyshoppinglist.R
+import com.example.awesomefamilyshoppinglist.databinding.ActivitySplashBinding
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.splash.SplashContract.Router.Companion.CODE_SIGN_IN
 import com.example.awesomefamilyshoppinglist.util.showToast
@@ -29,6 +31,7 @@ class SplashActivity : FragmentActivity() {
 
     @Inject
     internal lateinit var vmFactory: SplashContract.ViewModelFactory
+
     @Inject
     internal lateinit var router: SplashContract.Router
 
@@ -37,15 +40,14 @@ class SplashActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
-
+        val binding = DataBindingUtil.setContentView<ActivitySplashBinding>(this, R.layout.activity_splash)
+        binding.lifecycleOwner = this
         viewModel = vmFactory.getViewModel(this)
-    }
-
-    override fun onStart() {
-        super.onStart()
+        binding.viewModel = viewModel
         setListeners()
-        viewModel.autoLogin()
+        if (savedInstanceState == null) {
+            viewModel.autoLogin()
+        }
     }
 
     private fun setListeners() {
