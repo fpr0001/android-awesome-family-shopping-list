@@ -9,6 +9,7 @@ import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderTestImpl
 import dagger.Module
 import dagger.Provides
+import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import javax.inject.Provider
 import javax.inject.Singleton
@@ -27,7 +28,11 @@ open class AppModuleForTest {
 
     @Provides
     @Singleton
-    open fun providesUserRepository(): UserRepository = UserRepositoryImpl()
+    open fun providesUserRepositoryImpl(): UserRepositoryImpl = UserRepositoryImpl()
+
+    @Provides
+    @Singleton
+    open fun providesUserRepository(impl: UserRepositoryImpl): UserRepository = impl
 
     @Provides
     open fun providesSplashViewModel(
@@ -46,6 +51,6 @@ open class AppModuleForTest {
     open fun providesSplashRouter(
         userRepository: UserRepository
     ): SplashContract.Router {
-        return SplashRouterImpl(mock(FragmentActivity::class.java), userRepository)
+        return SplashRouterImpl(userRepository)
     }
 }

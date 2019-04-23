@@ -17,8 +17,8 @@ object SplashContract {
             const val CODE_SIGN_IN = 1
         }
 
-        fun goToMain()
-        fun goToLogin()
+        fun goToMain(activity: FragmentActivity)
+        fun goToLogin(activity: FragmentActivity)
     }
 
     interface ViewModel : BaseViewModelI {

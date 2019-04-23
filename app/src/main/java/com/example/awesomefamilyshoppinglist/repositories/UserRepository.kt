@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.repositories
 
 import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,7 +20,7 @@ interface UserRepository {
     fun logout(): Completable
 }
 
-internal class UserRepositoryImpl : UserRepository {
+open class UserRepositoryImpl : UserRepository {
 
     override fun getSignInIntent(): Intent {
         val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())

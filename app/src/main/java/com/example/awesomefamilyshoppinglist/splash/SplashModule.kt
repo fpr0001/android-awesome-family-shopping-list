@@ -33,10 +33,9 @@ abstract class SplashModule {
         @JvmStatic
         @Provides
         internal fun providesSplashRouter(
-            activity: SplashActivity,
             userRepository: UserRepository
         ): SplashContract.Router {
-            return SplashRouterImpl(activity, userRepository)
+            return SplashRouterImpl(userRepository)
         }
     }
 }

@@ -7,7 +7,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.example.awesomefamilyshoppinglist.App
 import com.example.awesomefamilyshoppinglist.di.AppComponentForTest
 import com.example.awesomefamilyshoppinglist.di.modules.AppModuleForTest
+import com.example.awesomefamilyshoppinglist.repositories.UserRepository
+import com.example.awesomefamilyshoppinglist.splash.SplashContract
 import it.cosenonjaviste.daggermock.DaggerMock
+import org.mockito.Mockito.spy
 
 fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
 
