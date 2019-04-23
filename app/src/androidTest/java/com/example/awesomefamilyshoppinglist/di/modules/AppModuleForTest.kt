@@ -48,9 +48,18 @@ open class AppModuleForTest {
         SplashContract.ViewModelFactory(provider)
 
     @Provides
-    open fun providesSplashRouter(
+    @Singleton
+    open fun providesSplashRouterImpl(
         userRepository: UserRepository
-    ): SplashContract.Router {
+    ): SplashRouterImpl {
         return SplashRouterImpl(userRepository)
+    }
+
+    @Provides
+    @Singleton
+    open fun providesSplashRouter(
+        impl: SplashRouterImpl
+    ): SplashContract.Router {
+        return impl
     }
 }

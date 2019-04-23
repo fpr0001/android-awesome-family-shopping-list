@@ -39,4 +39,7 @@ interface AppComponentForTest : AndroidInjector<App> {
     }
 
     fun getUserRepository(): UserRepository
+
+    fun getSplashRouter(): SplashContract.Router
+
 }

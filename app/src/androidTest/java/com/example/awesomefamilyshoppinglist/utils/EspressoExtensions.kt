@@ -10,6 +10,7 @@ import com.example.awesomefamilyshoppinglist.di.modules.AppModuleForTest
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.splash.SplashContract
 import it.cosenonjaviste.daggermock.DaggerMock
+import org.mockito.Mockito
 import org.mockito.Mockito.spy
 
 fun ViewInteraction.isGone() = getViewAssertion(ViewMatchers.Visibility.GONE)
@@ -29,3 +30,10 @@ fun espressoDaggerMockRule() = DaggerMock.rule<AppComponentForTest>(AppModuleFor
 
 val app: App
     get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
+
+fun <T> any(): T {
+    Mockito.any<T>()
+    return uninitialized()
+}
+@Suppress("UNCHECKED_CAST")
+private fun <T> uninitialized(): T = null as T
