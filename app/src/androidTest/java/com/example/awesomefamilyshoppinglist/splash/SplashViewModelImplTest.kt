@@ -4,11 +4,11 @@ import android.app.Application
 import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.example.awesomefamilyshoppinglist.util.SchedulerProviderImpl
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderTestImpl
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Single
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

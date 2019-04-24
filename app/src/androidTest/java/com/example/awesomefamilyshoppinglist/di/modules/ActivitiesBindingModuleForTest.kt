@@ -17,6 +17,6 @@ abstract class ActivitiesBindingModuleForTest {
     @ContributesAndroidInjector
     abstract fun bindSplash(): SplashActivity
 
-//    @ContributesAndroidInjector
-//    abstract fun bindMain(): MainActivity
+    @ContributesAndroidInjector
+    abstract fun bindMain(): MainActivity
 }

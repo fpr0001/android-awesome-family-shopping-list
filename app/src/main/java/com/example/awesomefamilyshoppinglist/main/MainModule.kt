@@ -5,7 +5,6 @@ import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
 import javax.inject.Provider
 
 @Module
@@ -31,7 +30,7 @@ abstract class MainModule {
 
         @JvmStatic
         @Provides
-        internal fun providesMainRouterImpl(activity: MainActivity): MainContract.Router = MainRouterImpl(activity)
+        internal fun providesMainRouterImpl(): MainContract.Router = MainRouterImpl()
 
     }
 }

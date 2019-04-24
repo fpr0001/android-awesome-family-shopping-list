@@ -94,7 +94,7 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.9.0'
 
     //mockito
-//    testImplementation "org.mockito:mockito-core:$mockito_version" //no uncomment
+    testImplementation "org.mockito:mockito-core:$mockito_version"
     androidTestImplementation "org.mockito:mockito-android:$mockito_version"
 
     //espresso
@@ -113,7 +113,10 @@ dependencies {
 
     androidTestImplementation 'android.arch.core:core-testing:1.1.1' //for InstantTaskExecutorRule
 
-//    androidTestImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version" //for class.qualifiedname
+    //for unit tests
+    testImplementation 'junit:junit:4.12'
+    testImplementation "org.hamcrest:hamcrest:2.1"
+
 }
 
 apply plugin: 'com.google.gms.google-services'

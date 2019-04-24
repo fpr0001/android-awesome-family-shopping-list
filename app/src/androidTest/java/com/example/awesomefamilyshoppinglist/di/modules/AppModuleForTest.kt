@@ -2,6 +2,9 @@ package com.example.awesomefamilyshoppinglist.di.modules
 
 import android.app.Application
 import androidx.fragment.app.FragmentActivity
+import com.example.awesomefamilyshoppinglist.main.MainContract
+import com.example.awesomefamilyshoppinglist.main.MainRouterImpl
+import com.example.awesomefamilyshoppinglist.main.MainViewModelImpl
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepositoryImpl
 import com.example.awesomefamilyshoppinglist.splash.*
@@ -62,4 +65,22 @@ open class AppModuleForTest {
     ): SplashContract.Router {
         return impl
     }
+
+    @Provides
+    open fun providesMainViewModel(
+        application: Application,
+        repository: UserRepository,
+        schedulerProvider: SchedulerProvider
+    ): MainViewModelImpl {
+        return MainViewModelImpl(application, repository, schedulerProvider)
+    }
+
+    @Provides
+    open fun providesMainViewModelFactory(provider: Provider<MainViewModelImpl>) =
+        MainContract.ViewModel.Companion.Factory(provider)
+
+    @Provides
+    @Singleton
+    open fun providesMainRouterImpl(): MainContract.Router = MainRouterImpl()
+
 }

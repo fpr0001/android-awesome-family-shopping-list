@@ -15,7 +15,7 @@ import io.reactivex.Single
 import io.reactivex.rxkotlin.addTo
 import timber.log.Timber
 
-internal class MainViewModelImpl(
+open class MainViewModelImpl(
     application: Application,
     private val userRepository: UserRepository,
     private val schedulerProvider: SchedulerProvider

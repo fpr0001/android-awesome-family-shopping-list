@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setListeners() {
-        viewModel.user.observe(this, Observer { user -> if (user == null) router.goToSplash() })
+        viewModel.user.observe(this, Observer { user -> if (user == null) router.goToSplash(this) })
     }
 
     override fun onBackPressed() {
@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.action_history -> {
-                router.goToHistory()
+                router.goToHistory(this)
             }
             R.id.action_logout -> {
                 viewModel.logout()

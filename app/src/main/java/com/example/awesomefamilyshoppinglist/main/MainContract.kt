@@ -1,5 +1,6 @@
 package com.example.awesomefamilyshoppinglist.main
 
+import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -11,8 +12,8 @@ import javax.inject.Provider
 object MainContract {
 
     interface Router {
-        fun goToSplash()
-        fun goToHistory()
+        fun goToSplash(context: Context)
+        fun goToHistory(context: Context)
     }
 
     interface ViewModel : BaseViewModelI {
@@ -25,7 +26,7 @@ object MainContract {
         companion object {
 
             @Suppress("UNCHECKED_CAST")
-            internal class Factory(private val provider: Provider<MainViewModelImpl>) : ViewModelProvider.Factory {
+            open class Factory(private val provider: Provider<MainViewModelImpl>) : ViewModelProvider.Factory {
                 override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
                     return provider.get() as T
                 }

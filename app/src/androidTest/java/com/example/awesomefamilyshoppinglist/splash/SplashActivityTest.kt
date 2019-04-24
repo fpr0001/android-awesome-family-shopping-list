@@ -38,7 +38,7 @@ import org.mockito.Mockito.*
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class SplashRealRouterActivityTest {
+class SplashActivityTest {
 
     @get:Rule
     var ruleForDagger = DaggerMock.rule<AppComponentForTest>(AppModuleForTest())
