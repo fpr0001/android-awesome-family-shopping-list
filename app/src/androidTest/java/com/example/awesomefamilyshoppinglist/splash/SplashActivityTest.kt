@@ -30,6 +30,7 @@ import com.example.awesomefamilyshoppinglist.utils.isVisible
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMock
+import it.cosenonjaviste.daggermock.DaggerMockRule
 import it.cosenonjaviste.daggermock.InjectFromComponent
 import org.junit.Rule
 import org.junit.Test
@@ -41,7 +42,7 @@ import org.mockito.Mockito.*
 class SplashActivityTest {
 
     @get:Rule
-    var ruleForDagger = DaggerMock.rule<AppComponentForTest>(AppModuleForTest())
+    var ruleForDagger: DaggerMockRule<AppComponentForTest> = DaggerMock.rule<AppComponentForTest>(AppModuleForTest())
         .decorates(UserRepositoryImpl::class.java) { obj -> spy(obj) }
         .decorates(SplashRouterImpl::class.java) { obj -> spy(obj) }
         .set { component -> component.inject(app) }
