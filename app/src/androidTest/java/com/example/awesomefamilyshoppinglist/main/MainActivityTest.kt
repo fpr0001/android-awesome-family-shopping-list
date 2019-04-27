@@ -5,6 +5,7 @@ import android.app.Instrumentation
 import android.content.ComponentName
 import android.view.Gravity
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -15,11 +16,12 @@ import androidx.test.espresso.contrib.NavigationViewActions.navigateTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.VerificationModes
 import androidx.test.espresso.intent.matcher.IntentMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
+import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.history.HistoryActivity
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
@@ -88,6 +90,20 @@ class MainActivityTest {
     }
 
     @Test
+    fun should_CloseDrawer_When_AndroidBackTapped() {
+        activityRule.launchActivity(null)
+
+        val navigateUpDesc = activityRule.activity
+            .getString(R.string.navigation_drawer_open)
+        onView(withContentDescription(navigateUpDesc)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withId(R.id.drawer_layout))
+            .check(matches(isClosed(Gravity.LEFT)))
+    }
+
+    @Test
     fun should_LaunchHistoryScreen_When_HistoryIsTapped() {
         Intents.init()
 
@@ -102,4 +118,17 @@ class MainActivityTest {
         Intents.release()
     }
 
+
+    @Test
+    fun should_ShowAppVersion_When_DrawerIsOpened() {
+        activityRule.launchActivity(null)
+
+        val navigateUpDesc = activityRule.activity
+            .getString(R.string.navigation_drawer_open)
+        onView(withContentDescription(navigateUpDesc)).perform(click())
+
+        onView(withId(R.id.text_view_version))
+            .check(matches(isDisplayed()))
+            .check(matches(withText("v" + BuildConfig.VERSION_NAME)))
+    }
 }

@@ -21,7 +21,7 @@ open class MainViewModelImpl(
     private val schedulerProvider: SchedulerProvider
 ) : BaseViewModel(application), MainContract.ViewModel {
 
-    private val userLiveData = MutableLiveData<FirebaseUser?>()
+    override val user: MutableLiveData<FirebaseUser?> = MutableLiveData()
 
     override val version = "v" + BuildConfig.VERSION_NAME
 
@@ -30,7 +30,7 @@ open class MainViewModelImpl(
             .async(getCurrentUser())
             .subscribe({ firebaseUser ->
                 hideProgressBar()
-                userLiveData.value = firebaseUser
+                user.value = firebaseUser
             }, { throwable ->
                 Timber.d(throwable)
                 hideProgressBar()
@@ -42,23 +42,17 @@ open class MainViewModelImpl(
     private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentUser()
 
     override fun logout() {
-//        EspressoIdlingResource.increment()
         showProgressBar()
         schedulerProvider
             .async(userRepository.logout())
             .subscribe({
                 hideProgressBar()
-                userLiveData.value = null
-//                EspressoIdlingResource.decrement()
+                user.value = null
             }, { throwable ->
                 Timber.d(throwable)
                 hideProgressBar()
-                userLiveData.value = null
-//                EspressoIdlingResource.decrement()
+                user.value = null
             })
             .addTo(compositeDisposable)
     }
-
-    override val user: MutableLiveData<FirebaseUser?> = userLiveData
-
 }
