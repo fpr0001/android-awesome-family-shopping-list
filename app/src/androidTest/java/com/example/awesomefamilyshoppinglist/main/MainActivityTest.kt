@@ -1,10 +1,9 @@
 package com.example.awesomefamilyshoppinglist.main
 
-import android.app.Activity
-import android.app.Instrumentation
 import android.content.ComponentName
 import android.view.Gravity
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -13,13 +12,14 @@ import androidx.test.espresso.contrib.DrawerActions.open
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.contrib.DrawerMatchers.isOpen
 import androidx.test.espresso.contrib.NavigationViewActions.navigateTo
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToHolder
+import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.VerificationModes
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
@@ -35,7 +35,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -130,5 +131,18 @@ class MainActivityTest {
         onView(withId(R.id.text_view_version))
             .check(matches(isDisplayed()))
             .check(matches(withText("v" + BuildConfig.VERSION_NAME)))
+    }
+
+    @Test
+    fun should_DisplayShoppingItems_When_onCreate() {
+        activityRule.launchActivity(null)
+
+        //fetch items from repository here
+
+        onView(withId(R.id.recycler_view))
+            .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
+
+        onView(withText("My first item")).check(matches(isDisplayed()))
+
     }
 }
