@@ -20,7 +20,7 @@ interface UserRepository {
     fun logout(): Completable
 }
 
-open class UserRepositoryImpl : UserRepository {
+open class UserRepositoryImpl(private val firebaseAuth: FirebaseAuth) : UserRepository {
 
     override fun getSignInIntent(): Intent {
         val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
@@ -31,7 +31,7 @@ open class UserRepositoryImpl : UserRepository {
     }
 
     override fun getCurrentUser(): Single<FirebaseUser> = Single.create { e: SingleEmitter<FirebaseUser> ->
-        val user = FirebaseAuth.getInstance().currentUser
+        val user = firebaseAuth.currentUser
         if (user != null)
             e.onSuccess(user)
         else e.onError(FirebaseNoSignedInUserException("User is null"))
@@ -39,14 +39,14 @@ open class UserRepositoryImpl : UserRepository {
 
     override fun logout(): Completable = Completable.create { emitter ->
         val idTokenListener = object : FirebaseAuth.IdTokenListener {
-            val removeTokenListenerAction = { FirebaseAuth.getInstance().removeIdTokenListener(this) }
+            val removeTokenListenerAction = { firebaseAuth.removeIdTokenListener(this) }
             override fun onIdTokenChanged(p0: FirebaseAuth) {
                 removeTokenListenerAction()
                 emitter.onComplete()
             }
         }
-        FirebaseAuth.getInstance().addIdTokenListener(idTokenListener)
-        FirebaseAuth.getInstance().signOut()
+        firebaseAuth.addIdTokenListener(idTokenListener)
+        firebaseAuth.signOut()
     }
 }
 

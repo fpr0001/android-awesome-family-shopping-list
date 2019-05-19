@@ -3,6 +3,7 @@ package com.example.awesomefamilyshoppinglist.di
 import android.app.Application
 import com.example.awesomefamilyshoppinglist.App
 import com.example.awesomefamilyshoppinglist.di.modules.ActivitiesBindingModule
+import com.example.awesomefamilyshoppinglist.di.modules.FirebaseModule
 import com.example.awesomefamilyshoppinglist.di.modules.RepositoryModule
 import com.example.awesomefamilyshoppinglist.di.modules.UtilsModule
 import dagger.BindsInstance
@@ -14,6 +15,7 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
+        FirebaseModule::class,
         RepositoryModule::class,
         UtilsModule::class,
         AndroidInjectionModule::class,

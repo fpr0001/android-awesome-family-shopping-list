@@ -10,6 +10,8 @@ import com.example.awesomefamilyshoppinglist.repositories.UserRepositoryImpl
 import com.example.awesomefamilyshoppinglist.splash.*
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderTestImpl
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import org.mockito.Mockito
@@ -27,11 +29,19 @@ open class AppModuleForTest {
 
     @Provides
     @Singleton
+    open fun providesFirebaseStorage(): FirebaseStorage = FirebaseStorage.getInstance()
+
+    @Provides
+    @Singleton
+    open fun providesFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
     open fun providesSchedulerProvider(): SchedulerProvider = SchedulerProviderTestImpl()
 
     @Provides
     @Singleton
-    open fun providesUserRepositoryImpl(): UserRepositoryImpl = UserRepositoryImpl()
+    open fun providesUserRepositoryImpl(firebaseAuth: FirebaseAuth): UserRepositoryImpl = UserRepositoryImpl(firebaseAuth)
 
     @Provides
     @Singleton

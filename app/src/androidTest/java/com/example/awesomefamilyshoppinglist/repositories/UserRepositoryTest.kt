@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.repositories
 
 import android.content.Intent
+import com.google.firebase.auth.FirebaseAuth
 import io.reactivex.Completable
 import io.reactivex.Single
 import org.hamcrest.Matchers
@@ -14,7 +15,7 @@ class UserRepositoryTest {
 
     @Before
     fun before() {
-        userRepository = UserRepositoryImpl()
+        userRepository = UserRepositoryImpl(FirebaseAuth.getInstance())
     }
 
     @Test
