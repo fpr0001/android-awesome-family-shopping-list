@@ -2,12 +2,10 @@ package com.example.awesomefamilyshoppinglist.main
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import androidx.test.espresso.idling.CountingIdlingResource
 import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.BaseViewModel
-import com.example.awesomefamilyshoppinglist.util.EspressoIdlingResource
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.showToast
 import com.google.firebase.auth.FirebaseUser
@@ -39,7 +37,7 @@ open class MainViewModelImpl(
             .addTo(compositeDisposable)
     }
 
-    private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentUser()
+    private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentFirebaseUser()
 
     override fun logout() {
         showProgressBar()

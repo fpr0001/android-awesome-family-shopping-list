@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
 import com.google.firebase.auth.FirebaseUser
+import io.reactivex.Completable
 import javax.inject.Provider
 
 object SplashContract {
@@ -27,6 +28,7 @@ object SplashContract {
         val tryAgainVisibility: ObservableInt
         fun autoLogin()
         fun enableTryAgain()
+        fun uploadCurrentUser()
     }
 
     @Suppress("UNCHECKED_CAST")

@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.di.modules
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -16,6 +17,10 @@ open class FirebaseModule {
     @Provides
     @Singleton
     open fun providesFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    open fun providesFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
 
 }

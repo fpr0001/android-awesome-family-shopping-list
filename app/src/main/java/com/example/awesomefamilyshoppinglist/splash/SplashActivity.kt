@@ -68,7 +68,7 @@ class SplashActivity : FragmentActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                router.goToMain(this)
+                viewModel.uploadCurrentUser()
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check

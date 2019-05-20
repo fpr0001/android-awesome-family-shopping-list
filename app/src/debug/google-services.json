@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "650636251820",
+    "firebase_url": "https://awesomefamilyshippinglist.firebaseio.com",
+    "project_id": "awesomefamilyshippinglist",
+    "storage_bucket": "awesomefamilyshippinglist.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:650636251820:android:40ee0dc062625769",
+        "android_client_info": {
+          "package_name": "com.example.awesomefamilyshoppinglist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "650636251820-j5rtgd109s2nfneu1hljshjosjk7onsr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.awesomefamilyshoppinglist",
+            "certificate_hash": "9d6f32de92bc605e6ffd2f683a4178164b02990c"
+          }
+        },
+        {
+          "client_id": "650636251820-a4ghks23ga7ce16dc92cjqan40c794dr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.awesomefamilyshoppinglist",
+            "certificate_hash": "ed46cdf5d9535029575ab20a28b64d64b58309f3"
+          }
+        },
+        {
+          "client_id": "650636251820-huhc52ma859t4jdth0mjacaa58n2dgo2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZW34kIFjrSCdNGMN_4MDKxFNFGdSk5WM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "650636251820-huhc52ma859t4jdth0mjacaa58n2dgo2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

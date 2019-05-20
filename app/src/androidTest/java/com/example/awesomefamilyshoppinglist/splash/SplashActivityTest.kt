@@ -6,11 +6,9 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.ActivityResultFunction
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.VerificationMode
 import androidx.test.espresso.intent.VerificationModes
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -63,7 +61,7 @@ class SplashActivityTest {
     @Test
     fun should_EnableTryAgainButton_When_SignInCancelledOrFailed() {
         Intents.init()
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
         intending(hasComponent(userRepository.getSignInIntent().component)).respondWith(activityResult)
         activityRule.launchActivity(null)
@@ -73,7 +71,7 @@ class SplashActivityTest {
 
     @Test
     fun test_VisibilityOfViews_When_InitialState() {
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
         doNothing().`when`(splashRouter).goToLogin(any())
         activityRule.launchActivity(null)
         onView(withId(R.id.button)).isGone()
@@ -83,7 +81,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchLogin_When_UserIsLoggedOut() {
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
         doNothing().`when`(splashRouter).goToLogin(any())
         activityRule.launchActivity(null)
         verify(splashRouter).goToLogin(activityRule.activity)
@@ -91,7 +89,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchMain_When_UserIsLoggedIn() {
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.just(mock(FirebaseUser::class.java)))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.just(mock(FirebaseUser::class.java)))
         doNothing().`when`(splashRouter).goToMain(any())
         activityRule.launchActivity(null)
         verify(splashRouter).goToMain(activityRule.activity)
@@ -100,7 +98,7 @@ class SplashActivityTest {
     @Test
     fun should_LaunchMain_When_UserLogsIn() {
         Intents.init()
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
         doNothing().`when`(splashRouter).goToMain(any())
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
         intending(hasComponent(userRepository.getSignInIntent().component)).respondWith(activityResult)
@@ -113,7 +111,7 @@ class SplashActivityTest {
     fun should_LaunchSignIn_When_TryAgainButtonIsTapped() {
         Intents.init()
         val intentMatcher = hasComponent(userRepository.getSignInIntent().component)
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
         intending(intentMatcher).respondWith(activityResult)
         activityRule.launchActivity(null)

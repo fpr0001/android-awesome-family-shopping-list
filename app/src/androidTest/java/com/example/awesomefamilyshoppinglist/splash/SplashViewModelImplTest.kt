@@ -34,7 +34,7 @@ class SplashViewModelImplTest {
 
     @Test
     fun auto_login_without_user() {
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
         vm.autoLogin()
         assertNull(vm.user.value)
     }
@@ -42,7 +42,7 @@ class SplashViewModelImplTest {
     @Test
     fun auto_login_with_user() {
         val firebaseUser = mock(FirebaseUser::class.java)
-        `when`(userRepository.getCurrentUser()).thenReturn(Single.just(firebaseUser))
+        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.just(firebaseUser))
         vm.autoLogin()
         assertEquals(vm.user.value, firebaseUser)
     }

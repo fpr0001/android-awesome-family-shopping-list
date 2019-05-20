@@ -20,7 +20,7 @@ class UserRepositoryTest {
 
     @Test
     fun assertReturnTypes() {
-        assertThat(userRepository.getCurrentUser(), Matchers.isA(Single::class.java))
+        assertThat(userRepository.getCurrentFirebaseUser(), Matchers.isA(Single::class.java))
         assertThat(userRepository.getSignInIntent(), Matchers.isA(Intent::class.java))
         assertThat(userRepository.logout(), Matchers.isA(Completable::class.java))
     }

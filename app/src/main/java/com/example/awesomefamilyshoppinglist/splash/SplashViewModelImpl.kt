@@ -16,7 +16,7 @@ open class SplashViewModelImpl(
     application: Application,
     private val userRepository: UserRepository,
     private val schedulerProvider: SchedulerProvider
-    ) : BaseViewModel(application), SplashContract.ViewModel {
+) : BaseViewModel(application), SplashContract.ViewModel {
 
     private val userLiveData = MutableLiveData<FirebaseUser?>()
 
@@ -34,12 +34,37 @@ open class SplashViewModelImpl(
             }, { throwable ->
                 Timber.d(throwable)
                 hideProgressBar()
-                userLiveData.value= null
+                userLiveData.value = null
             })
             .addTo(compositeDisposable)
     }
 
-    private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentUser()
+    fun fetchUser() {
+        //TODO fetch user, save it's family and categories
+        //TODO if no user, post it (ignore this part for now)
+    }
+
+    override fun uploadCurrentUser() {
+        showProgressBar()
+        schedulerProvider
+            .async(getCurrentUser()
+                .flatMap {
+                    userRepository
+                        .uploadUser(it)
+                        .toSingleDefault(it)
+                })
+            .subscribe({ firebaseUser ->
+                hideProgressBar()
+                userLiveData.value = firebaseUser
+            }, { throwable ->
+                Timber.d(throwable)
+                hideProgressBar()
+                userLiveData.value = null
+            })
+            .addTo(compositeDisposable)
+    }
+
+    private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentFirebaseUser()
 
     override fun enableTryAgain() {
         tryAgainVisibility.set(View.VISIBLE)
