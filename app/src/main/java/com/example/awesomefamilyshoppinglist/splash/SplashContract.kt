@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
+import java.lang.RuntimeException
 import javax.inject.Provider
 
 object SplashContract {
@@ -42,8 +43,18 @@ object SplashContract {
     }
 
     sealed class STATUS {
-        object LoggedIn : STATUS()
+        object LoggedInComplete : STATUS()
+        object LoggedInNoFamily : STATUS()
         object LoggedOut : STATUS()
+    }
+
+    class LoggedInException(val code: Int) : RuntimeException() {
+
+        companion object {
+            const val CODE_NO_FAMILY = 1
+            const val CODE_NO_USER = 2
+        }
+
     }
 }
 

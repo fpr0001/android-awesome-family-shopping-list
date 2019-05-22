@@ -54,7 +54,7 @@ class SplashActivity : FragmentActivity() {
         viewModel.statusLiveData.observe(this,
             Observer { status ->
                 when (status) {
-                    SplashContract.STATUS.LoggedIn -> router.goToMain(this)
+                    SplashContract.STATUS.LoggedInComplete -> router.goToMain(this)
                     else -> router.goToLogin(this)
                 }
             })
@@ -67,7 +67,7 @@ class SplashActivity : FragmentActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                viewModel.uploadCurrentUser()
+                viewModel.autoLogin()
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check

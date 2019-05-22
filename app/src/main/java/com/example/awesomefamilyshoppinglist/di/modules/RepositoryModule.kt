@@ -26,7 +26,9 @@ open class RepositoryModule {
 
     @Provides
     @Singleton
-    open fun providesFamilyRepository(): FamilyRepository =
-        FamilyRepositoryImpl()
+    open fun providesFamilyRepository(
+        firebaseFirestore: FirebaseFirestore
+    ): FamilyRepository =
+        FamilyRepositoryImpl(firebaseFirestore)
 
 }

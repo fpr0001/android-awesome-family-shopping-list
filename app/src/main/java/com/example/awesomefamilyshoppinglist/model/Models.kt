@@ -2,6 +2,7 @@ package com.example.awesomefamilyshoppinglist.model
 
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import java.io.Serializable
 

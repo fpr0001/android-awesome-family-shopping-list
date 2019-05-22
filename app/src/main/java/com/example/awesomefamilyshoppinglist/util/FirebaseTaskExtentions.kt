@@ -4,9 +4,7 @@ import com.example.awesomefamilyshoppinglist.model.User
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.EventListener
+import com.google.firebase.firestore.*
 import com.google.firebase.storage.UploadTask
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
@@ -41,6 +39,27 @@ inline fun <reified T> DocumentReference.toSingle(observeOn: Scheduler) = Single
                 emitter.onSuccess(pojo)
             } else {
                 emitter.safeOnError(RuntimeException("Error parsing object"))
+            }
+        }
+    }
+    val executorScheduler = ExecutorScheduler(observeOn)
+    val listenerRegistration = addSnapshotListener(executorScheduler, eventListener)
+    emitter.setCancellable {
+        executorScheduler.disposable?.dispose()
+        listenerRegistration.remove()
+    }
+}
+
+inline fun <reified T> CollectionReference.toSingle(observeOn: Scheduler) = Single.create<List<T>> { emitter ->
+    val eventListener = EventListener<QuerySnapshot> { querySnapshot, firebaseFirestoreException ->
+        if (firebaseFirestoreException != null) {
+            emitter.safeOnError(firebaseFirestoreException)
+        } else {
+            val pojo = querySnapshot?.toObjects(T::class.java)
+            if (pojo != null) {
+                emitter.onSuccess(pojo)
+            } else {
+                emitter.safeOnError(RuntimeException("Error parsing objects"))
             }
         }
     }
