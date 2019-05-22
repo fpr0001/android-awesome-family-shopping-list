@@ -4,17 +4,18 @@ import android.app.Application
 import android.view.View
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
+import com.example.awesomefamilyshoppinglist.model.User
 import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.BaseViewModel
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.google.firebase.auth.FirebaseUser
+import io.reactivex.Completable
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.Executor
+import java.lang.RuntimeException
 
 open class SplashViewModelImpl(
     application: Application,
@@ -31,11 +32,24 @@ open class SplashViewModelImpl(
         showProgressBar()
         tryAgainVisibility.set(View.GONE)
         schedulerProvider
-            .async(getCurrentUser())
-            .subscribe({
+            .async { observeOn ->
+                userRepository
+                    .getCurrentFirebaseUser()
+                    .flatMap { firebaseUser ->
+                        userRepository.getUser(firebaseUser.uid, observeOn)
+//                            .onErrorResumeNext() ON ERROR NO USER WITH THAT ID, POST NEW USER
+                    }.flatMap { user ->
+                        if (user.families.isNotEmpty()) {
+                            familyRepository.getFamily(user.families[0], observeOn)
+                        } else {
+                            Single.error(RuntimeException("User has no family"))
+                        }
+                    }.flatMapCompletable { family ->
+                        Completable.fromAction { familyRepository.currentFamily = family }
+                    }
+            }.subscribe({
                 hideProgressBar()
-                fetchUser(it.uid)
-//                statusLiveData.value = SplashContract.STATUS.LoggedIn
+                statusLiveData.value = SplashContract.STATUS.LoggedIn
             }, { throwable ->
                 Timber.e(throwable)
                 hideProgressBar()
@@ -43,49 +57,6 @@ open class SplashViewModelImpl(
             })
             .addTo(compositeDisposable)
     }
-
-    fun fetchUser(userUid: String) {
-        showProgressBar()
-        schedulerProvider.async { observeOn ->
-            userRepository.getUser(userUid, observeOn)
-                .flatMap { user -> familyRepository.getFamily(user.families[0], observeOn) }
-                .map { family -> familyRepository.currentFamily = family }
-        }
-            .subscribe({ user ->
-                hideProgressBar()
-                println(user.toString())
-            }, { throwable ->
-                Timber.e(throwable)
-                hideProgressBar()
-            })
-            .addTo(
-                compositeDisposable
-            )
-        //TODO fetch user, save it's family and categories
-        //TODO if no user, post it (ignore this part for now)
-    }
-
-    override fun uploadCurrentUser() {
-        autoLogin()
-//        showProgressBar()
-//        schedulerProvider
-//            .async(getCurrentUser()
-//                .flatMap {
-//                    fetchUser(it.uid)
-////                        .toSingleDefault(it)
-//                })
-//            .subscribe({ firebaseUser ->
-//                hideProgressBar()
-//                userLiveData.value = firebaseUser
-//            }, { throwable ->
-//                Timber.d(throwable)
-//                hideProgressBar()
-//                userLiveData.value = null
-//            })
-//            .addTo(compositeDisposable)
-    }
-
-    private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentFirebaseUser()
 
     override fun enableTryAgain() {
         tryAgainVisibility.set(View.VISIBLE)

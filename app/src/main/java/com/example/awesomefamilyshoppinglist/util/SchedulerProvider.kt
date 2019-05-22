@@ -11,9 +11,10 @@ import javax.inject.Provider
 
 interface SchedulerProvider {
     fun <T> async(single: Single<T>): Single<T>
+    fun <T> async(single: (observeOn: Scheduler) -> Single<T>): Single<T>
     fun <T> async(observable: Observable<T>): Observable<T>
     fun async(completable: Completable): Completable
-    fun <T> async(single: (observeOn: Scheduler) -> Single<T>): Single<T>
+    fun async(completable: (observeOn: Scheduler) -> Completable): Completable
 }
 
 abstract class BaseSchedulerImpl : SchedulerProvider {
@@ -38,6 +39,12 @@ abstract class BaseSchedulerImpl : SchedulerProvider {
 
     override fun async(completable: Completable): Completable {
         return completable
+            .subscribeOn(providerIo.get())
+            .observeOn(providerMain.get())
+    }
+
+    override fun async(completable: (observeOn: Scheduler) -> Completable): Completable {
+        return completable(providerIo.get())
             .subscribeOn(providerIo.get())
             .observeOn(providerMain.get())
     }
