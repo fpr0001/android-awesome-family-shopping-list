@@ -32,7 +32,7 @@ abstract class BaseModelAbstractItem<ViewModel, Item : ModelAbstractItem<ViewMod
 class SectionHeaderViewModel(val model: Category)
 
 class ItemViewModel(val model: Item) {
-    val userAndDate = "${model.createdBy.displayName}\n".plus(DateUtils.toText(model.createdAt))
+    val userAndDate = "${model.createdBy.name}\n".plus(DateUtils.toText(model.createdAt))
     val checked = model.boughtAt != 0L
 }
 

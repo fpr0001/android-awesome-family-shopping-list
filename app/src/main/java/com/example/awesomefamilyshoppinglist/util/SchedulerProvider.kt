@@ -13,6 +13,7 @@ interface SchedulerProvider {
     fun <T> async(single: Single<T>): Single<T>
     fun <T> async(observable: Observable<T>): Observable<T>
     fun async(completable: Completable): Completable
+    fun <T> async(single: (observeOn: Scheduler) -> Single<T>): Single<T>
 }
 
 abstract class BaseSchedulerImpl : SchedulerProvider {
@@ -49,6 +50,12 @@ abstract class BaseSchedulerImpl : SchedulerProvider {
 
     override fun <T> async(single: Single<T>): Single<T> {
         return single
+            .subscribeOn(providerIo.get())
+            .observeOn(providerMain.get())
+    }
+
+    override fun <T> async(single: (observeOn: Scheduler) -> Single<T>): Single<T> {
+        return single(providerIo.get())
             .subscribeOn(providerIo.get())
             .observeOn(providerMain.get())
     }

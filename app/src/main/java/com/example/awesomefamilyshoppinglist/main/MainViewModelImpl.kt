@@ -30,7 +30,7 @@ open class MainViewModelImpl(
                 hideProgressBar()
                 user.value = firebaseUser
             }, { throwable ->
-                Timber.d(throwable)
+                Timber.e(throwable)
                 hideProgressBar()
                 application().showToast(R.string.failed_to_load_user)
             })
@@ -47,7 +47,7 @@ open class MainViewModelImpl(
                 hideProgressBar()
                 user.value = null
             }, { throwable ->
-                Timber.d(throwable)
+                Timber.e(throwable)
                 hideProgressBar()
                 user.value = null
             })

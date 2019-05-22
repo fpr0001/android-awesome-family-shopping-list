@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.splash
 
 import android.app.Application
+import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderImpl
@@ -20,9 +21,10 @@ abstract class SplashModule {
         internal fun providesSplashViewModel(
             application: Application,
             repository: UserRepository,
+            familyRepository: FamilyRepository,
             schedulerProvider: SchedulerProvider
         ): SplashViewModelImpl {
-            return SplashViewModelImpl(application, repository, schedulerProvider)
+            return SplashViewModelImpl(application, repository, familyRepository, schedulerProvider)
         }
 
         @JvmStatic

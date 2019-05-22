@@ -1,15 +1,19 @@
 package com.example.awesomefamilyshoppinglist.repositories
 
 import com.example.awesomefamilyshoppinglist.model.Family
+import com.example.awesomefamilyshoppinglist.util.toSingle
+import com.google.firebase.firestore.DocumentReference
+import io.reactivex.Scheduler
 import io.reactivex.Single
 
 interface FamilyRepository {
-    fun getCurrentFamily(): Single<Family>
+    var currentFamily: Family?
+    fun getFamily(documentReference: DocumentReference, observeOn: Scheduler): Single<Family>
 }
 
-open class FamilyRepositoryImpl() : FamilyRepository {
+open class FamilyRepositoryImpl : FamilyRepository {
+    override var currentFamily: Family? = null
 
-    override fun getCurrentFamily(): Single<Family> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun getFamily(documentReference: DocumentReference, observeOn: Scheduler) =
+        documentReference.toSingle<Family>(observeOn)
 }

@@ -24,7 +24,7 @@ object SplashContract {
 
     interface ViewModel : BaseViewModelI {
 
-        val user: MutableLiveData<FirebaseUser?>
+        val statusLiveData: MutableLiveData<STATUS>
         val tryAgainVisibility: ObservableInt
         fun autoLogin()
         fun enableTryAgain()
@@ -40,6 +40,11 @@ object SplashContract {
         fun getViewModel(activity: FragmentActivity): ViewModel {
             return ViewModelProviders.of(activity, this).get(SplashViewModelImpl::class.java)
         }
+    }
+
+    sealed class STATUS {
+        object LoggedIn : STATUS()
+        object LoggedOut : STATUS()
     }
 }
 

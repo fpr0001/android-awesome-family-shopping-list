@@ -1,10 +1,8 @@
 package com.example.awesomefamilyshoppinglist.di.modules
 
-import com.example.awesomefamilyshoppinglist.repositories.ImageRepository
-import com.example.awesomefamilyshoppinglist.repositories.ImageRepositoryImpl
-import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.example.awesomefamilyshoppinglist.repositories.UserRepositoryImpl
+import com.example.awesomefamilyshoppinglist.repositories.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -17,13 +15,18 @@ open class RepositoryModule {
     @Singleton
     open fun providesUserRepository(
         firebaseAuth: FirebaseAuth,
-        imageRepository: ImageRepository
+        firebaseFirestore: FirebaseFirestore
     ): UserRepository =
-        UserRepositoryImpl(firebaseAuth, imageRepository)
+        UserRepositoryImpl(firebaseAuth, firebaseFirestore)
 
     @Provides
     @Singleton
     open fun providesImageRepository(firebaseStorage: FirebaseStorage): ImageRepository =
         ImageRepositoryImpl(firebaseStorage)
+
+    @Provides
+    @Singleton
+    open fun providesFamilyRepository(): FamilyRepository =
+        FamilyRepositoryImpl()
 
 }

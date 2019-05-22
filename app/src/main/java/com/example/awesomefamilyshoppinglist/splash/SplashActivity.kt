@@ -51,12 +51,11 @@ class SplashActivity : FragmentActivity() {
     }
 
     private fun setListeners() {
-        viewModel.user.observe(this,
-            Observer { user ->
-                if (user != null) {
-                    router.goToMain(this)
-                } else {
-                    router.goToLogin(this)
+        viewModel.statusLiveData.observe(this,
+            Observer { status ->
+                when (status) {
+                    SplashContract.STATUS.LoggedIn -> router.goToMain(this)
+                    else -> router.goToLogin(this)
                 }
             })
     }

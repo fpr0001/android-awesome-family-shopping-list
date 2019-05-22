@@ -4,23 +4,27 @@ import android.app.Application
 import android.view.View
 import androidx.databinding.ObservableInt
 import androidx.lifecycle.MutableLiveData
+import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.BaseViewModel
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.google.firebase.auth.FirebaseUser
+import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.rxkotlin.addTo
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.concurrent.Executor
 
 open class SplashViewModelImpl(
     application: Application,
     private val userRepository: UserRepository,
+    private val familyRepository: FamilyRepository,
     private val schedulerProvider: SchedulerProvider
 ) : BaseViewModel(application), SplashContract.ViewModel {
 
-    private val userLiveData = MutableLiveData<FirebaseUser?>()
-
-    override val user: MutableLiveData<FirebaseUser?> = userLiveData
+    override val statusLiveData: MutableLiveData<SplashContract.STATUS> =
+        MutableLiveData(SplashContract.STATUS.LoggedOut)
     override val tryAgainVisibility = ObservableInt(View.GONE)
 
     override fun autoLogin() {
@@ -28,40 +32,57 @@ open class SplashViewModelImpl(
         tryAgainVisibility.set(View.GONE)
         schedulerProvider
             .async(getCurrentUser())
-            .subscribe({ firebaseUser ->
+            .subscribe({
                 hideProgressBar()
-                userLiveData.value = firebaseUser
+                fetchUser(it.uid)
+//                statusLiveData.value = SplashContract.STATUS.LoggedIn
             }, { throwable ->
-                Timber.d(throwable)
+                Timber.e(throwable)
                 hideProgressBar()
-                userLiveData.value = null
+                statusLiveData.value = SplashContract.STATUS.LoggedOut
             })
             .addTo(compositeDisposable)
     }
 
-    fun fetchUser() {
+    fun fetchUser(userUid: String) {
+        showProgressBar()
+        schedulerProvider.async { observeOn ->
+            userRepository.getUser(userUid, observeOn)
+                .flatMap { user -> familyRepository.getFamily(user.families[0], observeOn) }
+                .map { family -> familyRepository.currentFamily = family }
+        }
+            .subscribe({ user ->
+                hideProgressBar()
+                println(user.toString())
+            }, { throwable ->
+                Timber.e(throwable)
+                hideProgressBar()
+            })
+            .addTo(
+                compositeDisposable
+            )
         //TODO fetch user, save it's family and categories
         //TODO if no user, post it (ignore this part for now)
     }
 
     override fun uploadCurrentUser() {
-        showProgressBar()
-        schedulerProvider
-            .async(getCurrentUser()
-                .flatMap {
-                    userRepository
-                        .uploadUser(it)
-                        .toSingleDefault(it)
-                })
-            .subscribe({ firebaseUser ->
-                hideProgressBar()
-                userLiveData.value = firebaseUser
-            }, { throwable ->
-                Timber.d(throwable)
-                hideProgressBar()
-                userLiveData.value = null
-            })
-            .addTo(compositeDisposable)
+        autoLogin()
+//        showProgressBar()
+//        schedulerProvider
+//            .async(getCurrentUser()
+//                .flatMap {
+//                    fetchUser(it.uid)
+////                        .toSingleDefault(it)
+//                })
+//            .subscribe({ firebaseUser ->
+//                hideProgressBar()
+//                userLiveData.value = firebaseUser
+//            }, { throwable ->
+//                Timber.d(throwable)
+//                hideProgressBar()
+//                userLiveData.value = null
+//            })
+//            .addTo(compositeDisposable)
     }
 
     private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentFirebaseUser()
@@ -70,3 +91,4 @@ open class SplashViewModelImpl(
         tryAgainVisibility.set(View.VISIBLE)
     }
 }
+
