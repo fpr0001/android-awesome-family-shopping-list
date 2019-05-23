@@ -33,7 +33,7 @@ class SectionHeaderViewModel(val model: Category)
 
 class ItemViewModel(val model: Item) {
     val userAndDate = "${model.createdBy.name}\n".plus(DateUtils.toText(model.createdAt))
-    val checked = model.boughtAt != 0L
+    val checked = model.boughtAt != null
 }
 
 class ModelItem(viewModel: ItemViewModel) : BaseModelAbstractItem<ItemViewModel, ModelItem, ItemViewHolder>(viewModel) {

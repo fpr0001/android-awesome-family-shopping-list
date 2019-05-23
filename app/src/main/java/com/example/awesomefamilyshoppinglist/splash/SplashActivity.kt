@@ -54,7 +54,8 @@ class SplashActivity : FragmentActivity() {
         viewModel.statusLiveData.observe(this,
             Observer { status ->
                 when (status) {
-                    SplashContract.STATUS.LoggedInComplete -> router.goToMain(this)
+                    SplashContract.Status.StatusLoggedIn -> router.goToMain(this)
+                    SplashContract.Status.StatusUserHasNoFamily -> Any()
                     else -> router.goToLogin(this)
                 }
             })

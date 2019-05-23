@@ -1,6 +1,9 @@
 package com.example.awesomefamilyshoppinglist.main
 
 import android.app.Application
+import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
+import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
+import com.example.awesomefamilyshoppinglist.repositories.ItemsRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import dagger.Module
@@ -17,10 +20,20 @@ abstract class MainModule {
         @Provides
         internal fun providesMainViewModel(
             application: Application,
-            repository: UserRepository,
+            userRepository: UserRepository,
+            familyRepository: FamilyRepository,
+            categoryRepository: CategoryRepository,
+            itemsRepository: ItemsRepository,
             schedulerProvider: SchedulerProvider
         ): MainViewModelImpl {
-            return MainViewModelImpl(application, repository, schedulerProvider)
+            return MainViewModelImpl(
+                application,
+                userRepository,
+                familyRepository,
+                categoryRepository,
+                itemsRepository,
+                schedulerProvider
+            )
         }
 
         @JvmStatic

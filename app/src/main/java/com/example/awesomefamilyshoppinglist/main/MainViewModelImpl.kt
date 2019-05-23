@@ -4,6 +4,11 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
+import com.example.awesomefamilyshoppinglist.model.Item
+import com.example.awesomefamilyshoppinglist.model.RemoteItem
+import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
+import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
+import com.example.awesomefamilyshoppinglist.repositories.ItemsRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.BaseViewModel
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
@@ -16,6 +21,9 @@ import timber.log.Timber
 open class MainViewModelImpl(
     application: Application,
     private val userRepository: UserRepository,
+    private val familyRepository: FamilyRepository,
+    private val categoryRepository: CategoryRepository,
+    private val itemsRepository: ItemsRepository,
     private val schedulerProvider: SchedulerProvider
 ) : BaseViewModel(application), MainContract.ViewModel {
 
@@ -38,6 +46,27 @@ open class MainViewModelImpl(
     }
 
     private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentFirebaseUser()
+
+    override fun loadItems() {
+        showProgressBar()
+        schedulerProvider
+            .async<List<Item>> { observeOn ->
+                familyRepository.getCurrentFamily()
+                    .flatMap { family ->
+                        itemsRepository.getItems(
+                            family.uid,
+                            userRepository.familyUsers,
+                            categoryRepository.categories,
+                            observeOn)
+                    }
+            }
+            .subscribe({ items ->
+                items.toString()
+            }, { throwable ->
+                Timber.e(throwable)
+            })
+            .addTo(compositeDisposable)
+    }
 
     override fun logout() {
         showProgressBar()

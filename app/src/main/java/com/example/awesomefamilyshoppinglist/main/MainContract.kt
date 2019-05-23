@@ -22,6 +22,7 @@ object MainContract {
         val version: String
         fun logout()
         fun loadUser()
+        fun loadItems()
 
         companion object {
 

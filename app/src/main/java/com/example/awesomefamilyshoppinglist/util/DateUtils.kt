@@ -11,5 +11,6 @@ object DateUtils {
     @JvmStatic
     fun toText(timestamp: Timestamp): String = dateFormat.format(timestamp.toDate())
 
-
+    @JvmStatic
+    fun toText(date: Date): String = dateFormat.format(date)
 }

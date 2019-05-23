@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.splash
 
 import android.app.Application
+import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
 import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
@@ -20,11 +21,10 @@ abstract class SplashModule {
         @Provides
         internal fun providesSplashViewModel(
             application: Application,
-            repository: UserRepository,
-            familyRepository: FamilyRepository,
+            splashUseCases: SplashContract.SplashUseCases,
             schedulerProvider: SchedulerProvider
         ): SplashViewModelImpl {
-            return SplashViewModelImpl(application, repository, familyRepository, schedulerProvider)
+            return SplashViewModelImpl(application, splashUseCases, schedulerProvider)
         }
 
         @JvmStatic
@@ -38,6 +38,16 @@ abstract class SplashModule {
             userRepository: UserRepository
         ): SplashContract.Router {
             return SplashRouterImpl(userRepository)
+        }
+
+        @JvmStatic
+        @Provides
+        internal fun providesSplashUseCases(
+            userRepository: UserRepository,
+            familyRepository: FamilyRepository,
+            categoryRepository: CategoryRepository
+        ): SplashContract.SplashUseCases {
+            return SplashUseCasesImpl(userRepository, familyRepository, categoryRepository)
         }
     }
 }

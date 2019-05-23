@@ -15,9 +15,10 @@ open class RepositoryModule {
     @Singleton
     open fun providesUserRepository(
         firebaseAuth: FirebaseAuth,
-        firebaseFirestore: FirebaseFirestore
+        firebaseFirestore: FirebaseFirestore,
+        userMapper: UserMapper
     ): UserRepository =
-        UserRepositoryImpl(firebaseAuth, firebaseFirestore)
+        UserRepositoryImpl(firebaseAuth, firebaseFirestore, userMapper)
 
     @Provides
     @Singleton
@@ -27,8 +28,24 @@ open class RepositoryModule {
     @Provides
     @Singleton
     open fun providesFamilyRepository(
-        firebaseFirestore: FirebaseFirestore
+        familyMapper: FamilyMapper
     ): FamilyRepository =
-        FamilyRepositoryImpl(firebaseFirestore)
+        FamilyRepositoryImpl(familyMapper)
+
+    @Provides
+    @Singleton
+    open fun providesItemsRepository(
+        firebaseFirestore: FirebaseFirestore,
+        itemMapper: ItemMapper
+    ): ItemsRepository =
+        ItemsRepositoryImpl(firebaseFirestore, itemMapper)
+
+    @Provides
+    @Singleton
+    open fun providesCategoryRepository(
+        firebaseFirestore: FirebaseFirestore,
+        categoryMapper: CategoryMapper
+    ): CategoryRepository =
+        CategoryRepositoryImpl(firebaseFirestore, categoryMapper)
 
 }

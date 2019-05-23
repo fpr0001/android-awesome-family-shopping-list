@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
+import io.reactivex.Scheduler
 import java.lang.RuntimeException
 import javax.inject.Provider
 
@@ -25,7 +26,7 @@ object SplashContract {
 
     interface ViewModel : BaseViewModelI {
 
-        val statusLiveData: MutableLiveData<STATUS>
+        val statusLiveData: MutableLiveData<Status>
         val tryAgainVisibility: ObservableInt
         fun autoLogin()
         fun enableTryAgain()
@@ -42,20 +43,19 @@ object SplashContract {
         }
     }
 
-    sealed class STATUS {
-        object LoggedInComplete : STATUS()
-        object LoggedInNoFamily : STATUS()
-        object LoggedOut : STATUS()
+    interface SplashUseCases {
+        fun fetchAndStoreEntities(observeOn: Scheduler): Completable
     }
 
-    class LoggedInException(val code: Int) : RuntimeException() {
-
-        companion object {
-            const val CODE_NO_FAMILY = 1
-            const val CODE_NO_USER = 2
-        }
-
+    open class Status {
+        object StatusLoggedIn : Status()
+        object StatusUserHasNoFamily : Status()
+        object StatusUserNotOnDb : Status()
+        object StatusLoggedOut : Status()
+        object StatusUnexpectedError : Status()
     }
+
+    class Exception(val status: Status) : RuntimeException()
 }
 
 

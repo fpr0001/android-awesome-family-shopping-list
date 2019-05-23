@@ -86,6 +86,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.imageView
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewModel.loadItems()
+    }
+
     private fun setListeners() {
         viewModel.user.observe(this, Observer { user -> if (user == null) router.goToSplash(this) })
     }

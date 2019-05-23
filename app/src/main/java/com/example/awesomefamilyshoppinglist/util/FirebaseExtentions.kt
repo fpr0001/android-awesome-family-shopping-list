@@ -1,20 +1,15 @@
 package com.example.awesomefamilyshoppinglist.util
 
-import com.example.awesomefamilyshoppinglist.model.User
+import com.example.awesomefamilyshoppinglist.model.BaseRemoteModel
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.*
 import com.google.firebase.storage.UploadTask
 import io.reactivex.*
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Cancellable
-import io.reactivex.internal.disposables.DisposableHelper
-import io.reactivex.internal.disposables.SequentialDisposable
-import io.reactivex.internal.operators.completable.CompletableObserveOn
 import java.lang.RuntimeException
 import java.util.concurrent.Executor
-import java.util.concurrent.atomic.AtomicReference
 
 fun UploadTask.toCompletable() = Completable.create { emitter ->
     val onSuccessListener = OnSuccessListener<UploadTask.TaskSnapshot> { emitter.onComplete() }
@@ -29,16 +24,16 @@ fun UploadTask.toCompletable() = Completable.create { emitter ->
     emitter.setCancellable(cancellable)
 }
 
-inline fun <reified T> DocumentReference.toSingle(observeOn: Scheduler) = Single.create<T> { emitter ->
+inline fun <reified T : BaseRemoteModel> DocumentReference.toSingle(observeOn: Scheduler) = Single.create<T> { emitter ->
     val eventListener = EventListener<DocumentSnapshot> { documentSnapshot, firebaseFirestoreException ->
         if (firebaseFirestoreException != null) {
             emitter.safeOnError(firebaseFirestoreException)
         } else {
-            val pojo = documentSnapshot?.toObject(T::class.java)
-            if (pojo != null) {
+            try {
+                val pojo = documentSnapshot!!.toPojo<T>()
                 emitter.onSuccess(pojo)
-            } else {
-                emitter.safeOnError(RuntimeException("Error parsing object"))
+            } catch (e: Throwable) {
+                emitter.safeOnError(RuntimeException("Document snapshot is null"))
             }
         }
     }
@@ -50,15 +45,22 @@ inline fun <reified T> DocumentReference.toSingle(observeOn: Scheduler) = Single
     }
 }
 
-inline fun <reified T> CollectionReference.toSingle(observeOn: Scheduler) = Single.create<List<T>> { emitter ->
+@Throws(NullPointerException::class)
+inline fun <reified T : BaseRemoteModel> DocumentSnapshot.toPojo(): T {
+    val pojo = toObject(T::class.java)
+    pojo!!.path = reference.path
+    return pojo
+}
+
+inline fun <reified T : BaseRemoteModel> Query.toSingle(observeOn: Scheduler) = Single.create<List<T>> { emitter ->
     val eventListener = EventListener<QuerySnapshot> { querySnapshot, firebaseFirestoreException ->
         if (firebaseFirestoreException != null) {
             emitter.safeOnError(firebaseFirestoreException)
         } else {
-            val pojo = querySnapshot?.toObjects(T::class.java)
-            if (pojo != null) {
-                emitter.onSuccess(pojo)
-            } else {
+            try {
+                val pojos = querySnapshot!!.documents.map { doc -> doc.toPojo<T>() }.toList()
+                emitter.onSuccess(pojos)
+            } catch (e: Throwable) {
                 emitter.safeOnError(RuntimeException("Error parsing objects"))
             }
         }

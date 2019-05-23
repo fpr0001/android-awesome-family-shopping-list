@@ -140,7 +140,8 @@ class MainActivityTest {
         onView(withId(R.id.recycler_view))
             .perform(scrollToPosition<RecyclerView.ViewHolder>(0))
 
-        onView(withText("My first item")).check(matches(isDisplayed()))
+        onView(withText("Banana")).check(matches(isDisplayed()))
+        onView(withText("Fruits")).check(matches(isDisplayed()))
 
     }
 }
