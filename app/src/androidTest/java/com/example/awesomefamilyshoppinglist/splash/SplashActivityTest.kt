@@ -26,6 +26,7 @@ import com.example.awesomefamilyshoppinglist.utils.app
 import com.example.awesomefamilyshoppinglist.utils.isGone
 import com.example.awesomefamilyshoppinglist.utils.isVisible
 import com.google.firebase.auth.FirebaseUser
+import io.reactivex.Completable
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMock
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -34,6 +35,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
+import org.mockito.Spy
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
@@ -41,7 +43,6 @@ class SplashActivityTest {
 
     @get:Rule
     var ruleForDagger: DaggerMockRule<AppComponentForTest> = DaggerMock.rule<AppComponentForTest>(AppModuleForTest())
-        .decorates(UserRepositoryImpl::class.java) { obj -> spy(obj) }
         .decorates(SplashRouterImpl::class.java) { obj -> spy(obj) }
         .set { component -> component.inject(app) }
         .customizeBuilder<AppComponentForTest.Builder> { it.provideApplication(app) }
@@ -52,8 +53,8 @@ class SplashActivityTest {
     @get:Rule
     val activityRule = ActivityTestRule<SplashActivity>(SplashActivity::class.java, false, false)
 
-    @InjectFromComponent
-    lateinit var userRepository: UserRepository
+    @Spy
+    lateinit var splashUseCases: SplashContract.SplashUseCases
 
     @InjectFromComponent
     lateinit var splashRouter: SplashContract.Router
@@ -61,9 +62,9 @@ class SplashActivityTest {
     @Test
     fun should_EnableTryAgainButton_When_SignInCancelledOrFailed() {
         Intents.init()
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
-        intending(hasComponent(userRepository.getSignInIntent().component)).respondWith(activityResult)
+        intending(hasComponent(splashRouter.getSignInIntent().component)).respondWith(activityResult)
         activityRule.launchActivity(null)
         onView(withId(R.id.button)).isVisible()
         Intents.release()
@@ -71,7 +72,7 @@ class SplashActivityTest {
 
     @Test
     fun test_VisibilityOfViews_When_InitialState() {
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
         doNothing().`when`(splashRouter).goToLogin(any())
         activityRule.launchActivity(null)
         onView(withId(R.id.button)).isGone()
@@ -81,7 +82,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchLogin_When_UserIsLoggedOut() {
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
         doNothing().`when`(splashRouter).goToLogin(any())
         activityRule.launchActivity(null)
         verify(splashRouter).goToLogin(activityRule.activity)
@@ -89,7 +90,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchMain_When_UserIsLoggedIn() {
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.just(mock(FirebaseUser::class.java)))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.complete())
         doNothing().`when`(splashRouter).goToMain(any())
         activityRule.launchActivity(null)
         verify(splashRouter).goToMain(activityRule.activity)
@@ -98,10 +99,10 @@ class SplashActivityTest {
     @Test
     fun should_LaunchMain_When_UserLogsIn() {
         Intents.init()
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
         doNothing().`when`(splashRouter).goToMain(any())
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
-        intending(hasComponent(userRepository.getSignInIntent().component)).respondWith(activityResult)
+        intending(hasComponent(splashRouter.getSignInIntent().component)).respondWith(activityResult)
         activityRule.launchActivity(null)
         verify(splashRouter).goToMain(activityRule.activity)
         Intents.release()
@@ -110,8 +111,8 @@ class SplashActivityTest {
     @Test
     fun should_LaunchSignIn_When_TryAgainButtonIsTapped() {
         Intents.init()
-        val intentMatcher = hasComponent(userRepository.getSignInIntent().component)
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
+        val intentMatcher = hasComponent(splashRouter.getSignInIntent().component)
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
         intending(intentMatcher).respondWith(activityResult)
         activityRule.launchActivity(null)

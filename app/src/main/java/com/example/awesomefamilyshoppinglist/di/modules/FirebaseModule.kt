@@ -1,5 +1,6 @@
 package com.example.awesomefamilyshoppinglist.di.modules
 
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -22,5 +23,8 @@ open class FirebaseModule {
     @Singleton
     open fun providesFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 
+    @Provides
+    @Singleton
+    open fun providesFirebaseAuthUi(): AuthUI = AuthUI.getInstance()
 
 }

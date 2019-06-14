@@ -21,7 +21,6 @@ interface UserRepository {
     var familyUsers: List<User>
     fun getCurrentFirebaseUser(): Single<FirebaseUser>
     fun getRemoteUser(userUid: String, observeOn: Scheduler): Single<RemoteUser>
-    fun getSignInIntent(): Intent
     fun logout(): Completable
     fun uploadUser(firebaseUser: FirebaseUser): Completable
     fun getUsersFromFamily(familyDocument: DocumentReference, observeOn: Scheduler): Single<List<User>>
@@ -59,14 +58,6 @@ open class UserRepositoryImpl(
             .whereArrayContains(FIELD_FAMILIES, familyDocument)
         return documentReference.toSingle<RemoteUser>(observeOn)
             .map { remoteUsers -> userMapper.to(remoteUsers) }
-    }
-
-    override fun getSignInIntent(): Intent {
-        val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
-        return AuthUI.getInstance()
-            .createSignInIntentBuilder()
-            .setAvailableProviders(providers)
-            .build()
     }
 
     //TODO test this func

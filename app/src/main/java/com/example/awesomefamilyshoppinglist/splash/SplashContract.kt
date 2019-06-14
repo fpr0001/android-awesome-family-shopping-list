@@ -1,5 +1,7 @@
 package com.example.awesomefamilyshoppinglist.splash
 
+import android.content.Intent
+import androidx.annotation.VisibleForTesting
 import androidx.databinding.ObservableInt
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -22,6 +24,9 @@ object SplashContract {
 
         fun goToMain(activity: FragmentActivity)
         fun goToLogin(activity: FragmentActivity)
+
+        @VisibleForTesting
+        fun getSignInIntent(): Intent
     }
 
     interface ViewModel : BaseViewModelI {
@@ -50,7 +55,7 @@ object SplashContract {
     open class Status {
         object StatusLoggedIn : Status()
         object StatusUserHasNoFamily : Status()
-        object StatusUserNotOnDb : Status()
+        object StatusUserNotOnDb : Status() //remote db
         object StatusLoggedOut : Status()
         object StatusUnexpectedError : Status()
     }

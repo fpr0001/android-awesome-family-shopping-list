@@ -6,6 +6,7 @@ import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderImpl
+import com.firebase.ui.auth.AuthUI
 import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
@@ -35,9 +36,9 @@ abstract class SplashModule {
         @JvmStatic
         @Provides
         internal fun providesSplashRouter(
-            userRepository: UserRepository
+            firebaseAuthUi: AuthUI
         ): SplashContract.Router {
-            return SplashRouterImpl(userRepository)
+            return SplashRouterImpl(firebaseAuthUi)
         }
 
         @JvmStatic

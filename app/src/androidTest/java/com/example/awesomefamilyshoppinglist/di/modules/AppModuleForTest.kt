@@ -9,6 +9,7 @@ import com.example.awesomefamilyshoppinglist.repositories.*
 import com.example.awesomefamilyshoppinglist.splash.*
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderTestImpl
+import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -36,6 +37,10 @@ open class AppModuleForTest {
     @Provides
     @Singleton
     open fun providesFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Provides
+    @Singleton
+    open fun providesFirebaseAuthUi(): AuthUI = AuthUI.getInstance()
 
     @Provides
     @Singleton
@@ -120,12 +125,17 @@ open class AppModuleForTest {
     // region ******************* UseCases **********************
 
     @Provides
-    internal fun providesSplashUseCases(
+    open fun providesSplashUseCasesImpl(
         userRepository: UserRepository,
         familyRepository: FamilyRepository,
         categoryRepository: CategoryRepository
-    ): SplashContract.SplashUseCases {
+    ): SplashUseCasesImpl {
         return SplashUseCasesImpl(userRepository, familyRepository, categoryRepository)
+    }
+
+    @Provides
+    open fun providesSplashUseCase(splashUseCasesImpl: SplashUseCasesImpl): SplashContract.SplashUseCases {
+        return splashUseCasesImpl
     }
 
     //endregion
@@ -176,9 +186,9 @@ open class AppModuleForTest {
     @Provides
     @Singleton
     open fun providesSplashRouterImpl(
-        userRepository: UserRepository
+        firebaseAuthUi: AuthUI
     ): SplashRouterImpl {
-        return SplashRouterImpl(userRepository)
+        return SplashRouterImpl(firebaseAuthUi)
     }
 
     @Provides
