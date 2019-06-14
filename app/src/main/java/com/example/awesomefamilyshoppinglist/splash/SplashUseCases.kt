@@ -15,7 +15,7 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.functions.Function3
 
-class SplashUseCasesImpl(
+open class SplashUseCasesImpl(
     private val userRepository: UserRepository,
     private val familyRepository: FamilyRepository,
     private val categoryRepository: CategoryRepository

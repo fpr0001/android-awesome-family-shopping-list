@@ -3,12 +3,11 @@ package com.example.awesomefamilyshoppinglist.splash
 import android.app.Application
 import android.view.View
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderTestImpl
-import com.google.firebase.auth.FirebaseUser
-import io.reactivex.Single
+import com.example.awesomefamilyshoppinglist.utils.any
+import io.reactivex.Completable
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -19,7 +18,7 @@ import org.mockito.Mockito.mock
 class SplashViewModelImplTest {
 
     private lateinit var vm: SplashContract.ViewModel
-    private lateinit var userRepository: UserRepository
+    private lateinit var splashUseCases: SplashContract.SplashUseCases
 
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
@@ -28,23 +27,22 @@ class SplashViewModelImplTest {
     fun init() {
         val applicationMock = mock(Application::class.java)
         val schedulerProvider = SchedulerProviderTestImpl()
-        userRepository = mock(UserRepository::class.java)
-        vm = SplashViewModelImpl(applicationMock, userRepository, schedulerProvider)
+        splashUseCases = mock(SplashUseCasesImpl::class.java)
+        vm = SplashViewModelImpl(applicationMock, splashUseCases, schedulerProvider)
     }
 
     @Test
     fun auto_login_without_user() {
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.error(RuntimeException()))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
         vm.autoLogin()
-        assertNull(vm.user.value)
+        assertNotEquals(SplashContract.Status.StatusLoggedIn, vm.statusLiveData.value)
     }
 
     @Test
     fun auto_login_with_user() {
-        val firebaseUser = mock(FirebaseUser::class.java)
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.just(firebaseUser))
+        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.complete())
         vm.autoLogin()
-        assertEquals(vm.user.value, firebaseUser)
+        assertEquals(vm.statusLiveData.value, SplashContract.Status.StatusLoggedIn)
     }
 
     @Test
