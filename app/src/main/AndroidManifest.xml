@@ -32,7 +32,7 @@
         <activity android:name=".list.ListActivity"/>
         <meta-data
                 android:name="io.fabric.ApiKey"
-                android:value="8228b971ec733c4c070ebdf97a42fa7f67f8dd50" />
+                android:value="${fabricKey}" />
     </application>
 
 </manifest>
