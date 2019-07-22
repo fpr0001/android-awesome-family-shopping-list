@@ -1,4 +1,7 @@
-# Awesome Family Shopping List
+# UNDER DEVELOPMENT
+
+Awesome Family Shopping List
+
 [![Build Status](https://app.bitrise.io/app/9ef9f8ce1195da18/status.svg?token=i2Y9eWfMq7lmiaPx0aFiAw&branch=master)](https://app.bitrise.io/app/9ef9f8ce1195da18)
 [![codebeat badge](https://codebeat.co/badges/4d25f4ed-8614-4729-a982-27b691fe530b)](https://codebeat.co/projects/github-com-fpr0001-android-awesome-family-shopping-list-master)
 
