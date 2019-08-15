@@ -14,41 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <ImageView
-                android:contentDescription="@string/app_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/avatars"
-                android:src="@mipmap/ic_launcher"
-                android:id="@+id/imageView"
-                android:layout_marginTop="8dp"
-                android:visibility="visible"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintVertical_bias="0.429"/>
-
-        <ProgressBar
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar"
-                android:visibility="@{viewModel.progressBarVisibility}"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/imageView"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.113"
-                android:layout_marginStart="8dp"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"/>
-
         <Button
                 android:text="@string/try_again_button"
                 android:layout_width="wrap_content"
@@ -58,13 +23,25 @@
                 android:visibility="@{viewModel.tryAgainVisibility}"
                 android:onClickListener="@{() -> viewModel.autoLogin()}"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="60dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"/>
+
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:visibility="@{viewModel.progressBarVisibility}"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginBottom="50dp"
+                app:layout_constraintBottom_toTopOf="@+id/button"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

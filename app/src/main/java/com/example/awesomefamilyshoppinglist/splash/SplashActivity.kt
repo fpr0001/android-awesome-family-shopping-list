@@ -27,9 +27,6 @@ class SplashActivity : FragmentActivity() {
     }
 
     @Inject
-    lateinit var userRepository: UserRepository
-
-    @Inject
     internal lateinit var vmFactory: SplashContract.ViewModelFactory
 
     @Inject
@@ -80,5 +77,4 @@ class SplashActivity : FragmentActivity() {
             }
         }
     }
-
 }

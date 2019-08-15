@@ -5,13 +5,11 @@ import android.app.Instrumentation
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.VerificationModes
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
@@ -19,15 +17,11 @@ import androidx.test.rule.ActivityTestRule
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.di.AppComponentForTest
 import com.example.awesomefamilyshoppinglist.di.modules.AppModuleForTest
-import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.example.awesomefamilyshoppinglist.repositories.UserRepositoryImpl
 import com.example.awesomefamilyshoppinglist.utils.any
 import com.example.awesomefamilyshoppinglist.utils.app
 import com.example.awesomefamilyshoppinglist.utils.isGone
 import com.example.awesomefamilyshoppinglist.utils.isVisible
-import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
-import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMock
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import it.cosenonjaviste.daggermock.InjectFromComponent
@@ -51,7 +45,7 @@ class SplashActivityTest {
     var ruleForLiveData = InstantTaskExecutorRule()
 
     @get:Rule
-    val activityRule = ActivityTestRule<SplashActivity>(SplashActivity::class.java, false, false)
+    val activityRule = ActivityTestRule(SplashActivity::class.java, false, false)
 
     @Spy
     lateinit var splashUseCases: SplashContract.SplashUseCases
@@ -77,7 +71,6 @@ class SplashActivityTest {
         activityRule.launchActivity(null)
         onView(withId(R.id.button)).isGone()
         onView(withId(R.id.progressBar)).isGone()
-        onView(withId(R.id.imageView)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -98,10 +91,11 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchMain_When_UserLogsIn() {
-        Intents.init()
         `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
+            .thenReturn(Completable.complete())
         doNothing().`when`(splashRouter).goToMain(any())
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
+        Intents.init()
         intending(hasComponent(splashRouter.getSignInIntent().component)).respondWith(activityResult)
         activityRule.launchActivity(null)
         verify(splashRouter).goToMain(activityRule.activity)

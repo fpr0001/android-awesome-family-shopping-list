@@ -30,7 +30,6 @@ object SplashContract {
     }
 
     interface ViewModel : BaseViewModelI {
-
         val statusLiveData: MutableLiveData<Status>
         val tryAgainVisibility: ObservableInt
         fun autoLogin()

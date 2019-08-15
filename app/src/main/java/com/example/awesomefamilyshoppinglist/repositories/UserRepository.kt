@@ -1,11 +1,9 @@
 package com.example.awesomefamilyshoppinglist.repositories
 
-import android.content.Intent
 import com.example.awesomefamilyshoppinglist.model.Family
 import com.example.awesomefamilyshoppinglist.model.RemoteUser
 import com.example.awesomefamilyshoppinglist.model.User
 import com.example.awesomefamilyshoppinglist.util.toSingle
-import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
@@ -49,7 +47,7 @@ open class UserRepositoryImpl(
         val documentReference = firebaseFirestore
             .collection(COLLECTION_USERS)
             .document(userUid)
-        return documentReference.toSingle<RemoteUser>(observeOn)
+        return documentReference.toSingle(observeOn)
     }
 
     override fun getUsersFromFamily(familyDocument: DocumentReference, observeOn: Scheduler): Single<List<User>> {

@@ -1,25 +1,24 @@
 package com.example.awesomefamilyshoppinglist
 
-import android.app.Activity
 import android.app.Application
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.ndk.CrashlyticsNdk
 import com.example.awesomefamilyshoppinglist.di.DaggerAppComponent
 import com.example.awesomefamilyshoppinglist.util.CrashReportingTree
 import dagger.android.AndroidInjector
-import dagger.android.HasActivityInjector
 import dagger.android.DispatchingAndroidInjector
+import dagger.android.HasAndroidInjector
 import io.fabric.sdk.android.Fabric
-import javax.inject.Inject
 import timber.log.Timber
 import timber.log.Timber.DebugTree
+import javax.inject.Inject
 
-class App : Application(), HasActivityInjector {
+class App : Application(), HasAndroidInjector {
 
     @Inject
-    lateinit var dispatchingActivityInjector: DispatchingAndroidInjector<Activity>
+    lateinit var dispatchingAnroidInjector: DispatchingAndroidInjector<Any>
 
-    override fun activityInjector(): AndroidInjector<Activity> = dispatchingActivityInjector
+    override fun androidInjector(): AndroidInjector<Any> = dispatchingAnroidInjector
 
     override fun onCreate() {
         super.onCreate()
