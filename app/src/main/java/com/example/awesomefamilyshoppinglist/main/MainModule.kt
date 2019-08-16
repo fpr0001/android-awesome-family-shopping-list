@@ -20,20 +20,25 @@ abstract class MainModule {
         @Provides
         internal fun providesMainViewModel(
             application: Application,
-            userRepository: UserRepository,
-            familyRepository: FamilyRepository,
-            categoryRepository: CategoryRepository,
-            itemsRepository: ItemsRepository,
+            useCases: MainContract.UseCases,
             schedulerProvider: SchedulerProvider
         ): MainViewModelImpl {
             return MainViewModelImpl(
                 application,
-                userRepository,
-                familyRepository,
-                categoryRepository,
-                itemsRepository,
+                useCases,
                 schedulerProvider
             )
+        }
+
+        @JvmStatic
+        @Provides
+        internal fun providesMainUseCases(
+            userRepository: UserRepository,
+            familyRepository: FamilyRepository,
+            categoryRepository: CategoryRepository,
+            itemsRepository: ItemsRepository
+        ): MainContract.UseCases {
+            return MainUseCasesImpl(userRepository, familyRepository, categoryRepository, itemsRepository)
         }
 
         @JvmStatic

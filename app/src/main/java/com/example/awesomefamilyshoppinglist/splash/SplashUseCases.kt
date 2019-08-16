@@ -19,14 +19,14 @@ open class SplashUseCasesImpl(
     private val userRepository: UserRepository,
     private val familyRepository: FamilyRepository,
     private val categoryRepository: CategoryRepository
-) : SplashContract.SplashUseCases {
+) : SplashContract.UseCases {
 
     override fun fetchAndStoreEntities(observeOn: Scheduler): Completable {
         return fetchFirebaseUser()
             .flatMap(fetchUser(observeOn))
             .flatMap { user ->
                 if (user.families.isNotEmpty()) {
-                    val familyDocument = user.families[0]
+                    val familyDocument = user.families[0] //TODO support multiple families in the future
                     fetchEntities(familyDocument, observeOn)
                 } else {
                     Single.error(SplashContract.Exception(SplashContract.Status.StatusUserHasNoFamily))

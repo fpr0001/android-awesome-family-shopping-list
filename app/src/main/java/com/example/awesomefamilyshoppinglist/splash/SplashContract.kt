@@ -47,7 +47,7 @@ object SplashContract {
         }
     }
 
-    interface SplashUseCases {
+    interface UseCases {
         fun fetchAndStoreEntities(observeOn: Scheduler): Completable
     }
 

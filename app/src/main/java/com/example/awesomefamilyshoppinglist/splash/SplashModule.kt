@@ -5,11 +5,9 @@ import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
 import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
-import com.example.awesomefamilyshoppinglist.util.SchedulerProviderImpl
 import com.firebase.ui.auth.AuthUI
 import dagger.Module
 import dagger.Provides
-import dagger.android.ContributesAndroidInjector
 import javax.inject.Provider
 
 @Module
@@ -22,10 +20,10 @@ abstract class SplashModule {
         @Provides
         internal fun providesSplashViewModel(
             application: Application,
-            splashUseCases: SplashContract.SplashUseCases,
+            useCases: SplashContract.UseCases,
             schedulerProvider: SchedulerProvider
         ): SplashViewModelImpl {
-            return SplashViewModelImpl(application, splashUseCases, schedulerProvider)
+            return SplashViewModelImpl(application, useCases, schedulerProvider)
         }
 
         @JvmStatic
@@ -47,7 +45,7 @@ abstract class SplashModule {
             userRepository: UserRepository,
             familyRepository: FamilyRepository,
             categoryRepository: CategoryRepository
-        ): SplashContract.SplashUseCases {
+        ): SplashContract.UseCases {
             return SplashUseCasesImpl(userRepository, familyRepository, categoryRepository)
         }
     }

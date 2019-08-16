@@ -2,9 +2,12 @@ package com.example.awesomefamilyshoppinglist.main
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HeaderViewListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.awesomefamilyshoppinglist.model.Category
 import com.example.awesomefamilyshoppinglist.model.Item
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.adapters.ItemAdapter
 
 class MainAdapter(val content: HashMap<Category, Item>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

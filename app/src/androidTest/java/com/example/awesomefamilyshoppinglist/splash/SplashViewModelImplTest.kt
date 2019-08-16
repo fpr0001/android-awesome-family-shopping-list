@@ -18,7 +18,7 @@ import org.mockito.Mockito.mock
 class SplashViewModelImplTest {
 
     private lateinit var vm: SplashContract.ViewModel
-    private lateinit var splashUseCases: SplashContract.SplashUseCases
+    private lateinit var useCases: SplashContract.UseCases
 
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
@@ -27,20 +27,20 @@ class SplashViewModelImplTest {
     fun init() {
         val applicationMock = mock(Application::class.java)
         val schedulerProvider = SchedulerProviderTestImpl()
-        splashUseCases = mock(SplashUseCasesImpl::class.java)
-        vm = SplashViewModelImpl(applicationMock, splashUseCases, schedulerProvider)
+        useCases = mock(SplashUseCasesImpl::class.java)
+        vm = SplashViewModelImpl(applicationMock, useCases, schedulerProvider)
     }
 
     @Test
     fun auto_login_without_user() {
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
         vm.autoLogin()
         assertNotEquals(SplashContract.Status.StatusLoggedIn, vm.statusLiveData.value)
     }
 
     @Test
     fun auto_login_with_user() {
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.complete())
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.complete())
         vm.autoLogin()
         assertEquals(vm.statusLiveData.value, SplashContract.Status.StatusLoggedIn)
     }

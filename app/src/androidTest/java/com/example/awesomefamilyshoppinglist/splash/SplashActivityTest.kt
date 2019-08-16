@@ -48,7 +48,7 @@ class SplashActivityTest {
     val activityRule = ActivityTestRule(SplashActivity::class.java, false, false)
 
     @Spy
-    lateinit var splashUseCases: SplashContract.SplashUseCases
+    lateinit var useCases: SplashContract.UseCases
 
     @InjectFromComponent
     lateinit var splashRouter: SplashContract.Router
@@ -56,7 +56,7 @@ class SplashActivityTest {
     @Test
     fun should_EnableTryAgainButton_When_SignInCancelledOrFailed() {
         Intents.init()
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
         intending(hasComponent(splashRouter.getSignInIntent().component)).respondWith(activityResult)
         activityRule.launchActivity(null)
@@ -66,7 +66,7 @@ class SplashActivityTest {
 
     @Test
     fun test_VisibilityOfViews_When_InitialState() {
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(RuntimeException()))
         doNothing().`when`(splashRouter).goToLogin(any())
         activityRule.launchActivity(null)
         onView(withId(R.id.button)).isGone()
@@ -75,7 +75,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchLogin_When_UserIsLoggedOut() {
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
         doNothing().`when`(splashRouter).goToLogin(any())
         activityRule.launchActivity(null)
         verify(splashRouter).goToLogin(activityRule.activity)
@@ -83,7 +83,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchMain_When_UserIsLoggedIn() {
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.complete())
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.complete())
         doNothing().`when`(splashRouter).goToMain(any())
         activityRule.launchActivity(null)
         verify(splashRouter).goToMain(activityRule.activity)
@@ -91,7 +91,7 @@ class SplashActivityTest {
 
     @Test
     fun should_LaunchMain_When_UserLogsIn() {
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
             .thenReturn(Completable.complete())
         doNothing().`when`(splashRouter).goToMain(any())
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
@@ -106,7 +106,7 @@ class SplashActivityTest {
     fun should_LaunchSignIn_When_TryAgainButtonIsTapped() {
         Intents.init()
         val intentMatcher = hasComponent(splashRouter.getSignInIntent().component)
-        `when`(splashUseCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
+        `when`(useCases.fetchAndStoreEntities(any())).thenReturn(Completable.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
         val activityResult = Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
         intending(intentMatcher).respondWith(activityResult)
         activityRule.launchActivity(null)

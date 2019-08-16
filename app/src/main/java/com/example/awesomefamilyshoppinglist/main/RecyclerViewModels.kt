@@ -2,30 +2,85 @@ package com.example.awesomefamilyshoppinglist.main
 
 import android.view.View
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.databinding.ItemSectionHeaderViewHolderBinding
 import com.example.awesomefamilyshoppinglist.databinding.ItemViewHolderBinding
 import com.example.awesomefamilyshoppinglist.model.Category
 import com.example.awesomefamilyshoppinglist.model.Item
 import com.example.awesomefamilyshoppinglist.util.DateUtils
-import com.mikepenz.fastadapter.items.ModelAbstractItem
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.items.AbstractItem
 
-@Suppress("FINITE_BOUNDS_VIOLATION_IN_JAVA", "NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-abstract class BaseModelAbstractItem<ViewModel, Item : ModelAbstractItem<ViewModel, Item, *>, VH : BaseViewHolder<ViewModel>>(
-    model: ViewModel
-) : ModelAbstractItem<ViewModel, Item, VH>(model) {
 
-    fun getViewModel(): ViewModel = model
+class ItemItem(val viewModel: ItemViewModel) : AbstractItem<ItemItem.ViewHolder>() {
 
-    override fun bindView(holder: VH, payloads: List<Any>?) {
-        super.bindView(holder, payloads)
-        holder.bind(getViewModel())
+    override fun hashCode(): Int {
+        return viewModel.model.uid.hashCode()
     }
 
-    override fun unbindView(holder: VH) {
-        super.unbindView(holder)
-        holder.unbind()
+    override fun equals(other: Any?): Boolean {
+        if (other is CategoryItem) {
+            return viewModel.model.uid == other.viewModel.model.uid
+        }
+        return super.equals(other)
+    }
+
+    override val layoutRes: Int
+        get() = R.layout.item_view_holder
+
+    override val type: Int
+        get() = R.id.id_list_item
+
+    override fun getViewHolder(v: View) = ViewHolder(v)
+
+    class ViewHolder(view: View) : FastAdapter.ViewHolder<ItemItem>(view) {
+        private val binding: ItemViewHolderBinding = DataBindingUtil.bind(view)!!
+
+        override fun bindView(item: ItemItem, payloads: MutableList<Any>) {
+            binding.viewModel = item.viewModel
+        }
+
+        override fun unbindView(item: ItemItem) {
+            binding.viewModel = null
+            binding.imageView.setImageDrawable(null)
+            binding.textViewName.text = null
+            binding.textViewUserDate.text = null
+        }
+    }
+}
+
+class CategoryItem(val viewModel: SectionHeaderViewModel) : AbstractItem<CategoryItem.ViewHolder>() {
+
+    override fun hashCode(): Int {
+        return viewModel.model.name.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is CategoryItem) {
+            return viewModel.model.name == other.viewModel.model.name
+        }
+        return super.equals(other)
+    }
+
+    override val layoutRes: Int
+        get() = R.layout.item_section_header_view_holder
+
+    override val type: Int
+        get() = R.id.id_list_header
+
+    override fun getViewHolder(v: View) = ViewHolder(v)
+
+    class ViewHolder(view: View) : FastAdapter.ViewHolder<CategoryItem>(view) {
+        private val binding: ItemSectionHeaderViewHolderBinding = DataBindingUtil.bind(view)!!
+
+        override fun bindView(item: CategoryItem, payloads: MutableList<Any>) {
+            binding.viewModel = item.viewModel
+        }
+
+        override fun unbindView(item: CategoryItem) {
+            binding.viewModel = null
+            binding.textView.text = null
+        }
     }
 }
 
@@ -34,56 +89,4 @@ class SectionHeaderViewModel(val model: Category)
 class ItemViewModel(val model: Item) {
     val userAndDate = "${model.createdBy.name}\n".plus(DateUtils.toText(model.createdAt))
     val checked = model.boughtAt != null
-}
-
-class ModelItem(viewModel: ItemViewModel) : BaseModelAbstractItem<ItemViewModel, ModelItem, ItemViewHolder>(viewModel) {
-
-    override fun getType() = layoutRes
-
-    override fun getViewHolder(v: View) = ItemViewHolder(v)
-
-    override fun getLayoutRes() = R.layout.item_view_holder
-
-}
-
-class ModelSectionHeader(category: Category) :
-    ModelAbstractItem<Category, ModelSectionHeader, SectionHeaderViewHolder>(category) {
-
-    override fun getType() = layoutRes
-
-    override fun getViewHolder(v: View) = SectionHeaderViewHolder(v)
-
-    override fun getLayoutRes() = R.layout.item_section_header_view_holder
-
-}
-
-abstract class BaseViewHolder<ViewModel>(view: View) : RecyclerView.ViewHolder(view) {
-    abstract fun bind(viewModel: ViewModel)
-    abstract fun unbind()
-}
-
-class ItemViewHolder(view: View) : BaseViewHolder<ItemViewModel>(view) {
-    private val binding: ItemViewHolderBinding = DataBindingUtil.bind(view)!!
-
-    override fun bind(viewModel: ItemViewModel) {
-        binding.viewModel = viewModel
-    }
-
-    override fun unbind() {
-        binding.imageView.setImageDrawable(null)
-        binding.textViewName.text = null
-        binding.textViewUserDate.text = null
-    }
-}
-
-class SectionHeaderViewHolder(view: View) : BaseViewHolder<SectionHeaderViewModel>(view) {
-    private val binding: ItemSectionHeaderViewHolderBinding = DataBindingUtil.bind(view)!!
-
-    override fun bind(viewModel: SectionHeaderViewModel) {
-        binding.viewModel = viewModel
-    }
-
-    override fun unbind() {
-        binding.textView.text = null
-    }
 }

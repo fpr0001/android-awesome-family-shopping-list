@@ -1,5 +1,7 @@
 package com.example.awesomefamilyshoppinglist.repositories
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.awesomefamilyshoppinglist.model.Category
 import com.example.awesomefamilyshoppinglist.model.Item
 import com.example.awesomefamilyshoppinglist.model.RemoteItem
@@ -11,7 +13,7 @@ import io.reactivex.Scheduler
 import io.reactivex.Single
 
 interface ItemsRepository {
-    val items: MutableList<Item>
+    val items: List<Item>
     fun getItems(
         familyUid: String,
         familyUsers: List<User>,
@@ -27,7 +29,8 @@ open class ItemsRepositoryImpl(
 
     private val COLLECTION = "family/%s/items"
 
-    override val items: MutableList<Item> = mutableListOf()
+    private val internalItems = mutableListOf<Item>()
+    override val items: List<Item> = internalItems
 
     override fun getItems(
         familyUid: String,
@@ -39,12 +42,16 @@ open class ItemsRepositoryImpl(
         .whereGreaterThan("createdAt", Timestamp(51840000, 0)) //two months old
         .toSingle<RemoteItem>(observeOn)
         .map { items -> itemMapper.to(items, familyUsers, categories) }
+        .doOnSuccess {
+            internalItems.clear()
+            internalItems.addAll(it)
+        }
 }
 
 open class ItemMapper {
 
     @Throws(NullPointerException::class)
-    fun to(remote: RemoteItem, familyUsers: List<User>, categories: List<Category>) : Item {
+    fun to(remote: RemoteItem, familyUsers: List<User>, categories: List<Category>): Item {
         val findUserPredicate = { userUid: String -> familyUsers.find { user: User -> user.uid == userUid }!! }
         val item = Item(
             remote.path,
@@ -60,7 +67,7 @@ open class ItemMapper {
     }
 
     @Throws(NullPointerException::class)
-    fun to(remotes: List<RemoteItem>, familyUsers: List<User>, categories: List<Category>) : List<Item> {
+    fun to(remotes: List<RemoteItem>, familyUsers: List<User>, categories: List<Category>): List<Item> {
         return remotes.map { remote -> to(remote, familyUsers, categories) }
     }
 }

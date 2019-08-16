@@ -10,17 +10,25 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.databinding.ActivityMainBinding
 import com.example.awesomefamilyshoppinglist.databinding.NavHeaderMainBinding
 import com.example.awesomefamilyshoppinglist.list.ListActivity
 import com.example.awesomefamilyshoppinglist.splash.SplashActivity
 import com.example.awesomefamilyshoppinglist.splash.SplashContract
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.FastAdapter.Companion.with
+import com.mikepenz.fastadapter.GenericFastAdapter
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.ItemAdapter
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.view.*
 import javax.inject.Inject
 
@@ -34,6 +42,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     internal lateinit var router: MainContract.Router
 
     lateinit var viewModel: MainContract.ViewModel
+
+    var adapterItems = ItemAdapter<ItemItem>()
 
     companion object {
         fun startActivity(context: Context) {
@@ -58,13 +68,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navigationHeaderBinding.lifecycleOwner = this
         navigationHeaderBinding.viewModel = viewModel
         mainBinding.navView.addHeaderView(navigationHeaderBinding.root)
-
         setSupportActionBar(toolbar)
-
         setListeners()
-        if (savedInstanceState == null) {
-            viewModel.loadUser()
-        }
+        recycler_view.adapter = FastAdapter.with(adapterItems)
+
+//        val adapters = ArrayList<ItemAdapter<GenericItem>>()
+//        for (entry in map.entries) {
+//            adapters.add(ItemAdapter<GenericItem>().apply { add(entry.key) })
+//            adapters.add(ItemAdapter<GenericItem>().apply { add(entry.value) })
+//        }
+//        val fastAdapter: GenericFastAdapter = FastAdapter.Companion.with(adapters)
+//        recycler_view.adapter = fastAdapter
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -92,7 +106,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setListeners() {
-        viewModel.user.observe(this, Observer { user -> if (user == null) router.goToSplash(this) })
+        viewModel.firebaseUserLiveData.observe(this, Observer { user -> if (user == null) router.goToSplash(this) })
+        viewModel.itemsLiveData.observe(this, Observer { map ->
+            for (entry in map.entries) {
+                map.values.map { list -> adapterItems.add(list) }
+            }
+        })
     }
 
     override fun onBackPressed() {

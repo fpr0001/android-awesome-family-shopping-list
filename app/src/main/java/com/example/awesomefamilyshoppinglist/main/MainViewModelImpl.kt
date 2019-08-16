@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.main
 
 import android.app.Application
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
@@ -20,50 +21,24 @@ import timber.log.Timber
 
 open class MainViewModelImpl(
     application: Application,
-    private val userRepository: UserRepository,
-    private val familyRepository: FamilyRepository,
-    private val categoryRepository: CategoryRepository,
-    private val itemsRepository: ItemsRepository,
+    private val useCases: MainContract.UseCases,
     private val schedulerProvider: SchedulerProvider
 ) : BaseViewModel(application), MainContract.ViewModel {
 
-    override val user: MutableLiveData<FirebaseUser?> = MutableLiveData()
-
     override val version = "v" + BuildConfig.VERSION_NAME
-
-    override fun loadUser() {
-        schedulerProvider
-            .async(getCurrentUser())
-            .subscribe({ firebaseUser ->
-                hideProgressBar()
-                user.value = firebaseUser
-            }, { throwable ->
-                Timber.e(throwable)
-                hideProgressBar()
-                application().showToast(R.string.failed_to_load_user)
-            })
-            .addTo(compositeDisposable)
-    }
-
-    private fun getCurrentUser(): Single<FirebaseUser> = userRepository.getCurrentFirebaseUser()
+    override val firebaseUserLiveData: LiveData<FirebaseUser> = useCases.firebaseUserLiveData
+    override val itemsLiveData: LiveData<MainHashMap> = useCases.itemsLiveData
 
     override fun loadItems() {
         showProgressBar()
         schedulerProvider
-            .async<List<Item>> { observeOn ->
-                familyRepository.getCurrentFamily()
-                    .flatMap { family ->
-                        itemsRepository.getItems(
-                            family.uid,
-                            userRepository.familyUsers,
-                            categoryRepository.categories,
-                            observeOn)
-                    }
-            }
-            .subscribe({ items ->
-                items.toString()
+            .async { scheduler -> useCases.loadItems(scheduler) }
+            .subscribe({
+                hideProgressBar()
             }, { throwable ->
                 Timber.e(throwable)
+                application().showToast(throwable.localizedMessage)
+                hideProgressBar()
             })
             .addTo(compositeDisposable)
     }
@@ -71,15 +46,15 @@ open class MainViewModelImpl(
     override fun logout() {
         showProgressBar()
         schedulerProvider
-            .async(userRepository.logout())
+            .async(useCases.logout())
             .subscribe({
                 hideProgressBar()
-                user.value = null
             }, { throwable ->
+                application().showToast(R.string.general_error_message)
                 Timber.e(throwable)
                 hideProgressBar()
-                user.value = null
             })
             .addTo(compositeDisposable)
     }
+
 }

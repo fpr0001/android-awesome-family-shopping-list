@@ -1,7 +1,6 @@
 package com.example.awesomefamilyshoppinglist.di.modules
 
 import android.app.Application
-import androidx.fragment.app.FragmentActivity
 import com.example.awesomefamilyshoppinglist.main.MainContract
 import com.example.awesomefamilyshoppinglist.main.MainRouterImpl
 import com.example.awesomefamilyshoppinglist.main.MainViewModelImpl
@@ -15,8 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
 import javax.inject.Provider
 import javax.inject.Singleton
 
@@ -134,7 +131,7 @@ open class AppModuleForTest {
     }
 
     @Provides
-    open fun providesSplashUseCase(splashUseCasesImpl: SplashUseCasesImpl): SplashContract.SplashUseCases {
+    open fun providesSplashUseCase(splashUseCasesImpl: SplashUseCasesImpl): SplashContract.UseCases {
         return splashUseCasesImpl
     }
 
@@ -145,10 +142,10 @@ open class AppModuleForTest {
     @Provides
     open fun providesSplashViewModel(
         application: Application,
-        splashUseCases: SplashContract.SplashUseCases,
+        useCases: SplashContract.UseCases,
         schedulerProvider: SchedulerProvider
     ): SplashViewModelImpl {
-        return SplashViewModelImpl(application, splashUseCases, schedulerProvider)
+        return SplashViewModelImpl(application, useCases, schedulerProvider)
     }
 
     @Provides

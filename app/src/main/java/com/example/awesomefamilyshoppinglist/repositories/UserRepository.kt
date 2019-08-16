@@ -1,5 +1,7 @@
 package com.example.awesomefamilyshoppinglist.repositories
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.awesomefamilyshoppinglist.model.Family
 import com.example.awesomefamilyshoppinglist.model.RemoteUser
 import com.example.awesomefamilyshoppinglist.model.User
@@ -16,6 +18,7 @@ import io.reactivex.SingleEmitter
 
 
 interface UserRepository {
+    val firebaseUserLiveData: LiveData<FirebaseUser>
     var familyUsers: List<User>
     fun getCurrentFirebaseUser(): Single<FirebaseUser>
     fun getRemoteUser(userUid: String, observeOn: Scheduler): Single<RemoteUser>
@@ -34,13 +37,16 @@ open class UserRepositoryImpl(
     private val FIELD_FAMILIES = "families"
     private val PATH_FAMILY = "/family/%s"
 
+    private val internalFirebaseUserLiveData = MutableLiveData<FirebaseUser>()
     override var familyUsers = listOf<User>()
+    override val firebaseUserLiveData: LiveData<FirebaseUser> = internalFirebaseUserLiveData
 
     override fun getCurrentFirebaseUser(): Single<FirebaseUser> = Single.create { e: SingleEmitter<FirebaseUser> ->
         val user = firebaseAuth.currentUser
-        if (user != null)
+        if (user != null) {
+            internalFirebaseUserLiveData.postValue(user)//this will get called before user moves from splash screen
             e.onSuccess(user)
-        else e.onError(FirebaseNoSignedInUserException("RemoteUser is null"))
+        } else e.onError(FirebaseNoSignedInUserException("RemoteUser is null"))
     }
 
     override fun getRemoteUser(userUid: String, observeOn: Scheduler): Single<RemoteUser> {
@@ -62,6 +68,7 @@ open class UserRepositoryImpl(
     override fun logout(): Completable = Completable.create { emitter ->
         val listener = FirebaseAuth.AuthStateListener {
             if (it.currentUser == null) {
+                internalFirebaseUserLiveData.postValue(null)
                 emitter.onComplete()
             }
         }
@@ -73,7 +80,7 @@ open class UserRepositoryImpl(
     }
 
     override fun uploadUser(firebaseUser: FirebaseUser): Completable {
-//        val user = firebaseUser.toUser()
+//        val user = firebaseUserLiveData.toUser()
         return Completable.complete()
         //TODO here
     }

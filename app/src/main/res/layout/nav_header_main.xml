@@ -28,7 +28,7 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:paddingTop="@dimen/nav_header_vertical_spacing"
-                app:imageUrl="@{viewModel.user.getPhotoUrl()}"
+                app:imageUrl="@{viewModel.firebaseUserLiveData.getPhotoUrl()}"
                 app:errorImage="@{@drawable/ic_menu_camera}"
                 app:circle="@{true}"
                 tools:srcCompat="@mipmap/ic_launcher_round"
@@ -39,14 +39,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/nav_header_vertical_spacing"
-                android:text="@{viewModel.user.getDisplayName()}"
+                android:text="@{viewModel.firebaseUserLiveData.getDisplayName()}"
                 tools:text="name here"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.user.getEmail()}"
+                android:text="@{viewModel.firebaseUserLiveData.getEmail()}"
                 tools:text="email here"
                 android:id="@+id/textView"/>
 
