@@ -7,8 +7,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelStoreOwner
 import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
-import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 import java.lang.RuntimeException
@@ -42,8 +42,8 @@ object SplashContract {
             return provider.get() as T
         }
 
-        fun getViewModel(activity: FragmentActivity): ViewModel {
-            return ViewModelProviders.of(activity, this).get(SplashViewModelImpl::class.java)
+        fun getViewModel(storeOwner: ViewModelStoreOwner): ViewModel {
+            return ViewModelProvider(storeOwner, this).get(SplashViewModelImpl::class.java)
         }
     }
 

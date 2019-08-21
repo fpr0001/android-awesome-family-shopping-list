@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.databinding.ActivitySplashBinding
-import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.splash.SplashContract.Router.Companion.CODE_SIGN_IN
 import com.example.awesomefamilyshoppinglist.util.showToast
 import com.firebase.ui.auth.IdpResponse

@@ -11,9 +11,8 @@
             tools:context=".main.MainActivity">
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
+                android:id="@+id/recyclerView"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:background="@android:color/holo_orange_dark"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 

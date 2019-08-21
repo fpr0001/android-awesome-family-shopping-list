@@ -17,8 +17,8 @@ open class MainUseCasesImpl(
     private val itemsRepository: ItemsRepository
 ) : MainContract.UseCases {
 
-    private val internalItemsLiveData = MutableLiveData<MainHashMap>()
-    override val itemsLiveData: LiveData<MainHashMap> = internalItemsLiveData
+    private val internalItemsLiveData = MutableLiveData<ArrayList<BaseItemViewModel>>()
+    override val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>> = internalItemsLiveData
     override val firebaseUserLiveData: LiveData<FirebaseUser> = userRepository.firebaseUserLiveData
 
     override fun loadItems(scheduler: Scheduler): Completable {
@@ -32,9 +32,13 @@ open class MainUseCasesImpl(
                 )
             }.toObservable()
             .concatMapIterable { x -> x }
-            .reduce(MainHashMap(), { map, item ->
-                map.put(CategoryItem(SectionHeaderViewModel(item.category)), ItemItem(ItemViewModel(item)))
-                map
+            .reduce(ArrayList<BaseItemViewModel>(), { list, item ->
+                val cm = CategoryViewModel(item.category)
+                if (!list.contains(cm)) {
+                    list.add(cm)
+                }
+                list.add(ItemViewModel(item))
+                list
             })
             .doOnSuccess { map ->
                 internalItemsLiveData.postValue(map)
@@ -42,15 +46,4 @@ open class MainUseCasesImpl(
     }
 
     override fun logout(): Completable = userRepository.logout()
-}
-
-class MainHashMap : HashMap<CategoryItem, ArrayList<ItemItem>>() {
-    fun put(categoryItem: CategoryItem, item: ItemItem) {
-        if (containsKey(categoryItem)) {
-            get(categoryItem)!!.add(item)
-        } else {
-            val a = arrayListOf(item)
-            put(categoryItem, a)
-        }
-    }
 }

@@ -1,92 +1,116 @@
 package com.example.awesomefamilyshoppinglist.main
 
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.IdRes
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.example.awesomefamilyshoppinglist.R
-import com.example.awesomefamilyshoppinglist.databinding.ItemSectionHeaderViewHolderBinding
+import com.example.awesomefamilyshoppinglist.databinding.ItemCategoryViewHolderBinding
 import com.example.awesomefamilyshoppinglist.databinding.ItemViewHolderBinding
 import com.example.awesomefamilyshoppinglist.model.Category
 import com.example.awesomefamilyshoppinglist.model.Item
 import com.example.awesomefamilyshoppinglist.util.DateUtils
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.items.AbstractItem
+import java.lang.RuntimeException
 
+class MainAdapter : RecyclerView.Adapter<BaseViewHolder<BaseItemViewModel>>() {
 
-class ItemItem(val viewModel: ItemViewModel) : AbstractItem<ItemItem.ViewHolder>() {
+    val list = ArrayList<BaseItemViewModel>()
 
-    override fun hashCode(): Int {
-        return viewModel.model.uid.hashCode()
+    fun refreshItems(newItems: List<BaseItemViewModel>) {
+        list.clear()
+        list.addAll(newItems)
+        notifyDataSetChanged()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other is CategoryItem) {
-            return viewModel.model.uid == other.viewModel.model.uid
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<BaseItemViewModel> {
+        return when (viewType) {
+            R.id.id_list_header -> CategoryViewHolder.from(parent) as BaseViewHolder<BaseItemViewModel>
+            R.id.id_list_item -> ItemViewHolder.from(parent) as BaseViewHolder<BaseItemViewModel>
+            else -> throw RuntimeException("No type defined for $viewType")
         }
-        return super.equals(other)
     }
 
-    override val layoutRes: Int
-        get() = R.layout.item_view_holder
+    override fun getItemCount() = list.size
 
-    override val type: Int
-        get() = R.id.id_list_item
+    override fun onBindViewHolder(holder: BaseViewHolder<BaseItemViewModel>, position: Int) {
+        holder.bindViewModel(list[position])
+    }
 
-    override fun getViewHolder(v: View) = ViewHolder(v)
+    override fun onViewRecycled(holder: BaseViewHolder<BaseItemViewModel>) {
+        super.onViewRecycled(holder)
+        holder.unbindView()
+    }
 
-    class ViewHolder(view: View) : FastAdapter.ViewHolder<ItemItem>(view) {
-        private val binding: ItemViewHolderBinding = DataBindingUtil.bind(view)!!
+    override fun getItemViewType(position: Int) = list[position].type
+}
 
-        override fun bindView(item: ItemItem, payloads: MutableList<Any>) {
-            binding.viewModel = item.viewModel
+class ItemViewHolder(view: View) : BaseViewHolder<ItemViewModel>(view) {
+    private val binding: ItemViewHolderBinding = DataBindingUtil.bind(view)!!
+
+    companion object Factory {
+        fun from(parent: ViewGroup): ItemViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_view_holder, parent, false)
+            return ItemViewHolder(view)
         }
+    }
 
-        override fun unbindView(item: ItemItem) {
-            binding.viewModel = null
-            binding.imageView.setImageDrawable(null)
-            binding.textViewName.text = null
-            binding.textViewUserDate.text = null
-        }
+    override fun bindViewModel(viewModel: ItemViewModel) {
+        binding.viewModel = viewModel
+    }
+
+    override fun unbindView() {
+        binding.viewModel = null
+        binding.imageView.setImageDrawable(null)
+        binding.textViewName.text = null
+        binding.textViewUserDate.text = null
     }
 }
 
-class CategoryItem(val viewModel: SectionHeaderViewModel) : AbstractItem<CategoryItem.ViewHolder>() {
+class CategoryViewHolder(view: View) : BaseViewHolder<CategoryViewModel>(view) {
+    private val binding: ItemCategoryViewHolderBinding = DataBindingUtil.bind(view)!!
 
-    override fun hashCode(): Int {
-        return viewModel.model.name.hashCode()
+    companion object Factory {
+        fun from(parent: ViewGroup): CategoryViewHolder {
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_category_view_holder, parent, false)
+            return CategoryViewHolder(view)
+        }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (other is CategoryItem) {
-            return viewModel.model.name == other.viewModel.model.name
-        }
-        return super.equals(other)
+    override fun bindViewModel(viewModel: CategoryViewModel) {
+        binding.viewModel = viewModel
     }
 
-    override val layoutRes: Int
-        get() = R.layout.item_section_header_view_holder
-
-    override val type: Int
-        get() = R.id.id_list_header
-
-    override fun getViewHolder(v: View) = ViewHolder(v)
-
-    class ViewHolder(view: View) : FastAdapter.ViewHolder<CategoryItem>(view) {
-        private val binding: ItemSectionHeaderViewHolderBinding = DataBindingUtil.bind(view)!!
-
-        override fun bindView(item: CategoryItem, payloads: MutableList<Any>) {
-            binding.viewModel = item.viewModel
-        }
-
-        override fun unbindView(item: CategoryItem) {
-            binding.viewModel = null
-            binding.textView.text = null
-        }
+    override fun unbindView() {
+        binding.viewModel = null
+        binding.textView.text = null
     }
 }
 
-class SectionHeaderViewModel(val model: Category)
+abstract class BaseViewHolder<in T : BaseItemViewModel>(view: View) : RecyclerView.ViewHolder(view) {
+    abstract fun bindViewModel(viewModel: T)
+    abstract fun unbindView()
+}
 
-class ItemViewModel(val model: Item) {
+data class CategoryViewModel(val model: Category) : BaseItemViewModel(R.id.id_list_header) {
+
+    override fun hashCode(): Int {
+        return model.uid.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as CategoryViewModel
+        if (model != other.model) return false
+        return true
+    }
+}
+
+class ItemViewModel(val model: Item) : BaseItemViewModel(R.id.id_list_item) {
     val userAndDate = "${model.createdBy.name}\n".plus(DateUtils.toText(model.createdAt))
     val checked = model.boughtAt != null
 }
+
+abstract class BaseItemViewModel(@IdRes val type: Int)

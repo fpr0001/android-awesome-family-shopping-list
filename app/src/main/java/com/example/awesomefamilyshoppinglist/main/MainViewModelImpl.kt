@@ -27,7 +27,7 @@ open class MainViewModelImpl(
 
     override val version = "v" + BuildConfig.VERSION_NAME
     override val firebaseUserLiveData: LiveData<FirebaseUser> = useCases.firebaseUserLiveData
-    override val itemsLiveData: LiveData<MainHashMap> = useCases.itemsLiveData
+    override val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>> = useCases.itemsLiveData
 
     override fun loadItems() {
         showProgressBar()

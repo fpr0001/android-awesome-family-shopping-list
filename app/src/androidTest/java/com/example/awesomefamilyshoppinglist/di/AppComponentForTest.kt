@@ -4,6 +4,7 @@ import android.app.Application
 import com.example.awesomefamilyshoppinglist.App
 import com.example.awesomefamilyshoppinglist.di.modules.ActivitiesBindingModuleForTest
 import com.example.awesomefamilyshoppinglist.di.modules.AppModuleForTest
+import com.example.awesomefamilyshoppinglist.main.MainActivityTest
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.splash.SplashContract
 import dagger.BindsInstance
@@ -36,4 +37,5 @@ interface AppComponentForTest : AndroidInjector<App> {
 
     fun getSplashRouter(): SplashContract.Router
 
+    fun inject(test: MainActivityTest)
 }

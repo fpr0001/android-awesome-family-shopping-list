@@ -1,6 +1,7 @@
 package com.example.awesomefamilyshoppinglist.main
 
 import android.app.Application
+import androidx.lifecycle.ViewModelStoreOwner
 import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
 import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.ItemsRepository
@@ -18,7 +19,7 @@ abstract class MainModule {
 
         @JvmStatic
         @Provides
-        internal fun providesMainViewModel(
+        internal fun providesMainViewModelImpl(
             application: Application,
             useCases: MainContract.UseCases,
             schedulerProvider: SchedulerProvider
@@ -48,7 +49,22 @@ abstract class MainModule {
 
         @JvmStatic
         @Provides
+        internal fun providesStoreOwner(activity: MainActivity): ViewModelStoreOwner = activity
+
+        @JvmStatic
+        @Provides
+        internal fun providesMainViewModel(
+            storeOwner: ViewModelStoreOwner,
+            factory: MainContract.ViewModel.Companion.Factory
+        ): MainContract.ViewModel =
+            factory.getViewModel(storeOwner)
+
+        @JvmStatic
+        @Provides
         internal fun providesMainRouterImpl(): MainContract.Router = MainRouterImpl()
 
+        @JvmStatic
+        @Provides
+        internal fun providesMainAdapter(): MainAdapter = MainAdapter()
     }
 }

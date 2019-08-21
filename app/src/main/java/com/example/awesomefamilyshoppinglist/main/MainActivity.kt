@@ -3,28 +3,20 @@ package com.example.awesomefamilyshoppinglist.main
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.core.view.GravityCompat
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.databinding.ActivityMainBinding
 import com.example.awesomefamilyshoppinglist.databinding.NavHeaderMainBinding
-import com.example.awesomefamilyshoppinglist.list.ListActivity
-import com.example.awesomefamilyshoppinglist.splash.SplashActivity
-import com.example.awesomefamilyshoppinglist.splash.SplashContract
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.FastAdapter.Companion.with
-import com.mikepenz.fastadapter.GenericFastAdapter
-import com.mikepenz.fastadapter.GenericItem
-import com.mikepenz.fastadapter.adapters.ItemAdapter
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import dagger.android.AndroidInjection
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -36,14 +28,13 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     @Inject
-    internal lateinit var vmFactory: MainContract.ViewModel.Companion.Factory
-
-    @Inject
     internal lateinit var router: MainContract.Router
 
+    @Inject
     lateinit var viewModel: MainContract.ViewModel
 
-    var adapterItems = ItemAdapter<ItemItem>()
+    @Inject
+    lateinit var adapter: MainAdapter
 
     companion object {
         fun startActivity(context: Context) {
@@ -56,29 +47,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-
-        viewModel = vmFactory.getViewModel(this)
-
-        val mainBinding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        mainBinding.lifecycleOwner = this
-        mainBinding.viewModel = viewModel
-
-        val navigationHeaderBinding: NavHeaderMainBinding =
-            DataBindingUtil.inflate(layoutInflater, R.layout.nav_header_main, mainBinding.navView, false)
-        navigationHeaderBinding.lifecycleOwner = this
-        navigationHeaderBinding.viewModel = viewModel
-        mainBinding.navView.addHeaderView(navigationHeaderBinding.root)
-        setSupportActionBar(toolbar)
-        setListeners()
-        recycler_view.adapter = FastAdapter.with(adapterItems)
-
-//        val adapters = ArrayList<ItemAdapter<GenericItem>>()
-//        for (entry in map.entries) {
-//            adapters.add(ItemAdapter<GenericItem>().apply { add(entry.key) })
-//            adapters.add(ItemAdapter<GenericItem>().apply { add(entry.value) })
-//        }
-//        val fastAdapter: GenericFastAdapter = FastAdapter.Companion.with(adapters)
-//        recycler_view.adapter = fastAdapter
+        configureView()
+        setLiveDataListeners()
 
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -100,17 +70,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.imageView
     }
 
+    private fun configureView() {
+        val mainBinding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        mainBinding.lifecycleOwner = this
+        mainBinding.viewModel = viewModel
+
+        val navigationHeaderBinding: NavHeaderMainBinding =
+            DataBindingUtil.inflate(layoutInflater, R.layout.nav_header_main, mainBinding.navView, false)
+        navigationHeaderBinding.lifecycleOwner = this
+        navigationHeaderBinding.viewModel = viewModel
+        mainBinding.navView.addHeaderView(navigationHeaderBinding.root)
+
+        setSupportActionBar(toolbar)
+
+        recyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
+        recyclerView.adapter = adapter
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.loadItems()
     }
 
-    private fun setListeners() {
+    private fun setLiveDataListeners() {
         viewModel.firebaseUserLiveData.observe(this, Observer { user -> if (user == null) router.goToSplash(this) })
-        viewModel.itemsLiveData.observe(this, Observer { map ->
-            for (entry in map.entries) {
-                map.values.map { list -> adapterItems.add(list) }
-            }
+        viewModel.itemsLiveData.observe(this, Observer { list ->
+            adapter.refreshItems(list)
         })
     }
 

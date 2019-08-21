@@ -1,12 +1,8 @@
 package com.example.awesomefamilyshoppinglist.main
 
 import android.content.Context
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import com.example.awesomefamilyshoppinglist.model.Item
+import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.*
 import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
@@ -24,13 +20,13 @@ object MainContract {
         fun loadItems(scheduler: Scheduler): Completable
         fun logout(): Completable
         val firebaseUserLiveData: LiveData<FirebaseUser>
-        val itemsLiveData: LiveData<MainHashMap>
+        val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>>
     }
 
     interface ViewModel : BaseViewModelI {
 
         val firebaseUserLiveData: LiveData<FirebaseUser>
-        val itemsLiveData: LiveData<MainHashMap>
+        val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>>
         val version: String
         fun logout()
         fun loadItems()
@@ -43,8 +39,8 @@ object MainContract {
                     return provider.get() as T
                 }
 
-                fun getViewModel(activity: FragmentActivity): ViewModel {
-                    return ViewModelProviders.of(activity, this).get(MainViewModelImpl::class.java)
+                open fun getViewModel(storeOwner: ViewModelStoreOwner): ViewModel {
+                    return ViewModelProvider(storeOwner, this).get(MainViewModelImpl::class.java)
                 }
             }
         }

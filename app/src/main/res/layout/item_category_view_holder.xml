@@ -7,7 +7,7 @@
 
         <variable
                 name="viewModel"
-                type="com.example.awesomefamilyshoppinglist.main.SectionHeaderViewModel"/>
+                type="com.example.awesomefamilyshoppinglist.main.CategoryViewModel"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

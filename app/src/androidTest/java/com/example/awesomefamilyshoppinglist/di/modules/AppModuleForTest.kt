@@ -1,19 +1,22 @@
 package com.example.awesomefamilyshoppinglist.di.modules
 
 import android.app.Application
-import com.example.awesomefamilyshoppinglist.main.MainContract
-import com.example.awesomefamilyshoppinglist.main.MainRouterImpl
-import com.example.awesomefamilyshoppinglist.main.MainViewModelImpl
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import com.example.awesomefamilyshoppinglist.main.*
 import com.example.awesomefamilyshoppinglist.repositories.*
 import com.example.awesomefamilyshoppinglist.splash.*
 import com.example.awesomefamilyshoppinglist.util.SchedulerProvider
 import com.example.awesomefamilyshoppinglist.util.SchedulerProviderTestImpl
+import com.example.awesomefamilyshoppinglist.utils.app
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
+import org.mockito.Mockito.spy
 import javax.inject.Provider
 import javax.inject.Singleton
 
@@ -135,6 +138,22 @@ open class AppModuleForTest {
         return splashUseCasesImpl
     }
 
+    @Provides
+    open fun providesMainUseCasesImpl(
+        userRepository: UserRepository,
+        familyRepository: FamilyRepository,
+        categoryRepository: CategoryRepository,
+        itemsRepository: ItemsRepository
+    ): MainUseCasesImpl {
+        return MainUseCasesImpl(userRepository, familyRepository, categoryRepository, itemsRepository)
+    }
+
+    @Provides
+    open fun providesMainUseCase(useCasesImpl: MainUseCasesImpl): MainContract.UseCases {
+        return useCasesImpl
+    }
+
+
     //endregion
 
     // region ******************* ViewModels **********************
@@ -149,36 +168,28 @@ open class AppModuleForTest {
     }
 
     @Provides
-    open fun providesSplashViewModelFactory(provider: Provider<SplashViewModelImpl>) =
-        SplashContract.ViewModelFactory(provider)
-
-
-    @Provides
-    open fun providesMainViewModel(
-        application: Application,
-        userRepository: UserRepository,
-        familyRepository: FamilyRepository,
-        categoryRepository: CategoryRepository,
-        itemsRepository: ItemsRepository,
+    open fun providesMainViewModelImpl(
+        useCases: MainContract.UseCases,
         schedulerProvider: SchedulerProvider
     ): MainViewModelImpl {
         return MainViewModelImpl(
-            application,
-            userRepository,
-            familyRepository,
-            categoryRepository,
-            itemsRepository,
+            app,
+            useCases,
             schedulerProvider
         )
     }
 
     @Provides
-    open fun providesMainViewModelFactory(provider: Provider<MainViewModelImpl>) =
-        MainContract.ViewModel.Companion.Factory(provider)
+    open fun providesSplashViewModelFactory(provider: Provider<SplashViewModelImpl>) =
+        SplashContract.ViewModelFactory(provider)
 
-    //endregion
+    @Provides
+    @Singleton
+    open fun providesMainViewModel(vmi: MainViewModelImpl): MainContract.ViewModel = spy(vmi)
 
-    // region ******************* Routers **********************
+//endregion
+
+// region ******************* Routers **********************
 
     @Provides
     @Singleton
@@ -200,6 +211,12 @@ open class AppModuleForTest {
     @Singleton
     open fun providesMainRouterImpl(): MainContract.Router = MainRouterImpl()
 
-    //endregion
+//endregion
 
+//region ******************* Adapters ********************
+
+    @Provides
+    internal fun providesMainAdapter(): MainAdapter = MainAdapter()
+
+//endregion
 }
