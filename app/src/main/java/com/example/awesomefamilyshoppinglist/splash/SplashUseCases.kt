@@ -42,13 +42,13 @@ open class SplashUseCasesImpl(
             categoryRepository.categories = triple.third
         }
 
-    private fun fetchFirebaseUser(): Single<FirebaseUser> {
+    private fun fetchFirebaseUser(): Single<User> {
         return userRepository
             .getCurrentFirebaseUser()
             .onErrorResumeNext(Single.error(SplashContract.Exception(SplashContract.Status.StatusLoggedOut)))
     }
 
-    private fun fetchUser(observeOn: Scheduler): (FirebaseUser) -> Single<RemoteUser> {
+    private fun fetchUser(observeOn: Scheduler): (User) -> Single<RemoteUser> {
         return { firebaseUser ->
             userRepository.getRemoteUser(firebaseUser.uid, observeOn)
                 .onErrorResumeNext { throwable ->

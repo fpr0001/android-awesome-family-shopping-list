@@ -2,11 +2,11 @@ package com.example.awesomefamilyshoppinglist.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.awesomefamilyshoppinglist.model.User
 import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
 import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.ItemsRepository
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
 import io.reactivex.Scheduler
 
@@ -19,7 +19,7 @@ open class MainUseCasesImpl(
 
     private val internalItemsLiveData = MutableLiveData<ArrayList<BaseItemViewModel>>()
     override val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>> = internalItemsLiveData
-    override val firebaseUserLiveData: LiveData<FirebaseUser> = userRepository.firebaseUserLiveData
+    override val firebaseUserLiveData: LiveData<User> = userRepository.firebaseUserLiveData
 
     override fun loadItems(scheduler: Scheduler): Completable {
         return familyRepository.getCurrentFamily()

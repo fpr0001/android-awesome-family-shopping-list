@@ -18,15 +18,8 @@ class RemoteCategory : BaseRemoteModel(), Serializable
 class RemoteUser : BaseRemoteModel(), Serializable {
     var email: String = ""
     var families: MutableList<DocumentReference> = mutableListOf()
-    var profilePitureUrl: String? = null
+    var profilePictureUrl: String? = null
 }
-
-//fun FirebaseUser.asNewUser() = RemoteUser().let {
-//    it.name = displayName!!
-//    it.createdAt = Timestamp.now()
-//    it.email = email!!
-//    it.profilePitureUrl = photoUrl?.toString()
-//}
 
 class RemoteItem : BaseRemoteModel(), Serializable {
     lateinit var createdBy: DocumentReference

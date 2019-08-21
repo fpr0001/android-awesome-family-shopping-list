@@ -3,6 +3,7 @@ package com.example.awesomefamilyshoppinglist.main
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.*
+import com.example.awesomefamilyshoppinglist.model.User
 import com.example.awesomefamilyshoppinglist.util.BaseViewModelI
 import com.google.firebase.auth.FirebaseUser
 import io.reactivex.Completable
@@ -19,13 +20,13 @@ object MainContract {
     interface UseCases {
         fun loadItems(scheduler: Scheduler): Completable
         fun logout(): Completable
-        val firebaseUserLiveData: LiveData<FirebaseUser>
+        val firebaseUserLiveData: LiveData<User>
         val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>>
     }
 
     interface ViewModel : BaseViewModelI {
 
-        val firebaseUserLiveData: LiveData<FirebaseUser>
+        val firebaseUserLiveData: LiveData<User>
         val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>>
         val version: String
         fun logout()

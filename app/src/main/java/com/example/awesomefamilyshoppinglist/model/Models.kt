@@ -2,9 +2,12 @@ package com.example.awesomefamilyshoppinglist.model
 
 import java.util.*
 
-open class BaseModel(var path: String, var name: String, val createdAt: Date) {
-    val uid get() = path.split("/".toRegex()).last()
-}
+open class BaseModel(
+    var path: String,
+    var name: String,
+    val createdAt: Date,
+    open val uid: String = path.split("/".toRegex()).last()
+)
 
 class Item(
     path: String,
@@ -32,11 +35,11 @@ class User(
     name: String,
     createdAt: Date,
     var email: String,
-    var profilePitureUrl: String? = null,
-    var families: MutableList<Family> = mutableListOf()
+    var profilePictureUrl: String? = null,
+    var families: MutableList<Family> = mutableListOf(),
+    uid: String = path.split("/".toRegex()).last()
 ) :
-    BaseModel(path, name, createdAt)
-
+    BaseModel(path, name, createdAt, uid)
 
 
 

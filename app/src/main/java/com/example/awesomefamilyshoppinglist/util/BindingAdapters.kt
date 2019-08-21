@@ -71,3 +71,15 @@ fun loadImage(imageView: ImageView, uri: Uri?, errorImage: Drawable, circle: Boo
         .into(imageView)
 
 }
+
+@BindingAdapter("imageUrl", "errorImage", "circle")
+fun loadImage(imageView: ImageView, url: String?, errorImage: Drawable, circle: Boolean = false) {
+
+    val options = getRequestOptions(errorImage, circle)
+
+    Glide.with(imageView)
+        .load(url)
+        .apply(options)
+        .into(imageView)
+
+}

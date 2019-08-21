@@ -7,6 +7,7 @@ import com.example.awesomefamilyshoppinglist.di.modules.AppModuleForTest
 import com.example.awesomefamilyshoppinglist.main.MainActivityTest
 import com.example.awesomefamilyshoppinglist.repositories.UserRepository
 import com.example.awesomefamilyshoppinglist.splash.SplashContract
+import com.example.awesomefamilyshoppinglist.utils.AppForTests
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
@@ -20,7 +21,7 @@ import javax.inject.Singleton
         ActivitiesBindingModuleForTest::class,
         AppModuleForTest::class]
 )
-interface AppComponentForTest : AndroidInjector<App> {
+interface AppComponentForTest : AndroidInjector<AppForTests> {
 
     @Component.Builder
     interface Builder {

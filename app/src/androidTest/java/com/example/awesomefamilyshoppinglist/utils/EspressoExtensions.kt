@@ -28,8 +28,8 @@ fun espressoDaggerMockRule() = DaggerMock.rule<AppComponentForTest>(AppModuleFor
     customizeBuilder<AppComponentForTest.Builder> { it.provideApplication(app) }
 }
 
-val app: App
-    get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as App
+val app: AppForTests
+    get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as AppForTests
 
 fun <T> any(): T {
     Mockito.any<T>()
@@ -37,3 +37,6 @@ fun <T> any(): T {
 }
 @Suppress("UNCHECKED_CAST")
 private fun <T> uninitialized(): T = null as T
+
+inline fun <reified T> lambdaMock(): T = Mockito.mock(T::class.java)
+

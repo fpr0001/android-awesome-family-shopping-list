@@ -17,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
 import org.mockito.Mockito.spy
+import javax.inject.Named
 import javax.inject.Provider
 import javax.inject.Singleton
 
@@ -88,7 +89,7 @@ open class AppModuleForTest {
 
     @Provides
     @Singleton
-    open fun providesUserRepository(impl: UserRepositoryImpl): UserRepository = impl
+    open fun providesUserRepository(impl: UserRepositoryImpl): UserRepository = spy(impl)
 
 
     @Provides
@@ -104,6 +105,30 @@ open class AppModuleForTest {
     @Provides
     @Singleton
     open fun providesItemsRepository(impl: ItemsRepositoryImpl): ItemsRepository = impl
+    //endregion
+
+    // region ******************* FakeRepositories **********************
+
+    @Provides
+    @Singleton
+    open fun providesFakeUserRepository(): FakeUserRepository = FakeUserRepository()
+
+
+    @Provides
+    @Singleton
+    open fun providesFakeFamilyRepository(): FakeFamilyRepository = FakeFamilyRepository()
+
+
+    @Provides
+    @Singleton
+    open fun providesFakeCategoryRepository(): FakeCategoryRepository = FakeCategoryRepository()
+
+
+    @Provides
+    @Singleton
+    open fun providesFakeItemsRepository(): FakeItemsRepository = FakeItemsRepository()
+
+
     //endregion
 
     // region ******************* Mappers **********************
@@ -153,6 +178,17 @@ open class AppModuleForTest {
         return useCasesImpl
     }
 
+    @Provides
+    @Named("fake")
+    open fun providesFakeMainUseCasesImpl(
+        userRepository: FakeUserRepository,
+        familyRepository: FakeFamilyRepository,
+        categoryRepository: FakeCategoryRepository,
+        itemsRepository: FakeItemsRepository
+    ): MainUseCasesImpl {
+        return MainUseCasesImpl(userRepository, familyRepository, categoryRepository, itemsRepository)
+    }
+
 
     //endregion
 
@@ -169,14 +205,15 @@ open class AppModuleForTest {
 
     @Provides
     open fun providesMainViewModelImpl(
-        useCases: MainContract.UseCases,
+        @Named("fake")
+        useCases: MainUseCasesImpl,
         schedulerProvider: SchedulerProvider
     ): MainViewModelImpl {
-        return MainViewModelImpl(
+        return spy(MainViewModelImpl(
             app,
             useCases,
             schedulerProvider
-        )
+        ))
     }
 
     @Provides
@@ -185,7 +222,7 @@ open class AppModuleForTest {
 
     @Provides
     @Singleton
-    open fun providesMainViewModel(vmi: MainViewModelImpl): MainContract.ViewModel = spy(vmi)
+    open fun providesMainViewModel(vmi: MainViewModelImpl): MainContract.ViewModel = vmi
 
 //endregion
 
@@ -209,7 +246,7 @@ open class AppModuleForTest {
 
     @Provides
     @Singleton
-    open fun providesMainRouterImpl(): MainContract.Router = MainRouterImpl()
+    open fun providesMainRouterImpl(): MainContract.Router = spy(MainRouterImpl())
 
 //endregion
 

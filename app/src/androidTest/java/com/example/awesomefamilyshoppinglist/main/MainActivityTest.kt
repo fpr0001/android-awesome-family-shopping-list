@@ -1,9 +1,7 @@
 package com.example.awesomefamilyshoppinglist.main
 
-import android.content.ComponentName
 import android.view.Gravity
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.*
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -12,50 +10,24 @@ import androidx.test.espresso.contrib.DrawerActions.open
 import androidx.test.espresso.contrib.DrawerMatchers.isClosed
 import androidx.test.espresso.contrib.DrawerMatchers.isOpen
 import androidx.test.espresso.contrib.NavigationViewActions.navigateTo
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
-import com.example.awesomefamilyshoppinglist.di.AppComponentForTest
-import com.example.awesomefamilyshoppinglist.di.modules.AppModuleForTest
-import com.example.awesomefamilyshoppinglist.history.HistoryActivity
-import com.example.awesomefamilyshoppinglist.model.Category
-import com.example.awesomefamilyshoppinglist.model.Item
-import com.example.awesomefamilyshoppinglist.model.User
-import com.example.awesomefamilyshoppinglist.repositories.UserRepository
-import com.example.awesomefamilyshoppinglist.splash.SplashActivity
+import com.example.awesomefamilyshoppinglist.repositories.FakeCategoryRepository
+import com.example.awesomefamilyshoppinglist.repositories.FakeItemsRepository
+import com.example.awesomefamilyshoppinglist.repositories.FakeUserRepository
 import com.example.awesomefamilyshoppinglist.utils.app
-import com.example.awesomefamilyshoppinglist.utils.espressoDaggerMockRule
-import com.google.firebase.auth.FirebaseUser
-import io.reactivex.Completable
-import io.reactivex.Single
-import it.cosenonjaviste.daggermock.DaggerMock
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito
 import org.mockito.Mockito.*
-import org.mockito.Spy
-import java.util.*
 import javax.inject.Inject
 
-@RunWith(AndroidJUnit4::class)
 @LargeTest
 class MainActivityTest {
-
-    @get:Rule
-    var ruleForDagger = DaggerMock.rule<AppComponentForTest>(AppModuleForTest()) {
-        set { component ->
-            component.inject(app)
-            component.inject(this@MainActivityTest)
-        }
-        customizeBuilder<AppComponentForTest.Builder> { it.provideApplication(app) }
-    }
 
     @get:Rule
     var ruleForLiveData = InstantTaskExecutorRule()
@@ -63,31 +35,44 @@ class MainActivityTest {
     @get:Rule
     var activityRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java, false, false)
 
-    @Spy
-    lateinit var userRepository: UserRepository
-
     @Inject
     lateinit var viewModel: MainContract.ViewModel
 
+    @Inject
+    lateinit var fakeUserRepository: FakeUserRepository
+
+    @Inject
+    lateinit var fakeCategoryRepository: FakeCategoryRepository
+
+    @Inject
+    lateinit var fakeItemsRepository: FakeItemsRepository
+
+    @Inject
+    lateinit var mainRouterSpy: MainContract.Router
+
     @Before
     fun before() {
-        `when`(userRepository.getCurrentFirebaseUser()).thenReturn(Single.just(mock(FirebaseUser::class.java)))
+        app.component.inject(this)
+    }
+
+    @After
+    fun after() {
+        clearInvocations(viewModel)
+        if (fakeUserRepository.internalFirebaseUserLiveData.value == null) {
+            fakeUserRepository.internalFirebaseUserLiveData.postValue(fakeUserRepository.fakeCurrentUser)
+        }
     }
 
     @Test
     fun should_LaunchSplashScreen_When_LogoutIsTapped() {
-        Intents.init()
-        `when`(userRepository.logout()).thenReturn(Completable.complete())
-
         activityRule.launchActivity(null)
 
         onView(withId(R.id.drawer_layout)).perform(open())
+        doNothing().`when`(mainRouterSpy).goToSplash(activityRule.activity)
 
         onView(withId(R.id.nav_view)).perform(navigateTo(R.id.action_logout))
 
-        val componentName = ComponentName(activityRule.activity, SplashActivity::class.java)
-        Intents.intended(IntentMatchers.hasComponent(componentName))
-        Intents.release()
+        verify(mainRouterSpy).goToSplash(activityRule.activity)
     }
 
     @Test
@@ -121,17 +106,15 @@ class MainActivityTest {
 
     @Test
     fun should_LaunchHistoryScreen_When_HistoryIsTapped() {
-        Intents.init()
-
         activityRule.launchActivity(null)
 
         onView(withId(R.id.drawer_layout)).perform(open())
 
+        doNothing().`when`(mainRouterSpy).goToHistory(activityRule.activity)
+
         onView(withId(R.id.nav_view)).perform(navigateTo(R.id.action_history))
 
-        val componentName = ComponentName(activityRule.activity, HistoryActivity::class.java)
-        Intents.intended(IntentMatchers.hasComponent(componentName))
-        Intents.release()
+        verify(mainRouterSpy).goToHistory(activityRule.activity)
     }
 
 
@@ -156,20 +139,11 @@ class MainActivityTest {
 
     @Test
     fun should_DisplayItems_When_ItemsLiveDataPost() {
-        val category = Category("", "fruits", Date())
-        val categoryViewModel = CategoryViewModel(category)
-        val user = User("", "felipe", Date(), "e@e.com", null, mutableListOf())
-        val itemViewModel = ItemViewModel(Item("", "banana", Date(), user, null, null, null, category))
-
-        `when`(viewModel.firebaseUserLiveData).thenReturn(MutableLiveData())
-        `when`(viewModel.itemsLiveData).thenReturn(MutableLiveData(arrayListOf(categoryViewModel, itemViewModel)))
 
         activityRule.launchActivity(null)
 
-        onView(withText("banana")).check(matches(isDisplayed()))
-        onView(withText("fruits")).check(matches(isDisplayed()))
+        onView(withText(fakeItemsRepository.item.name)).check(matches(isDisplayed()))
+        onView(withText(fakeCategoryRepository.category.name)).check(matches(isDisplayed()))
 
     }
 }
-
-inline fun <reified T> lambdaMock(): T = Mockito.mock(T::class.java)

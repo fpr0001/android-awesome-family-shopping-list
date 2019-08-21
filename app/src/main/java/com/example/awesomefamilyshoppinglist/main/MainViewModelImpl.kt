@@ -7,6 +7,7 @@ import com.example.awesomefamilyshoppinglist.BuildConfig
 import com.example.awesomefamilyshoppinglist.R
 import com.example.awesomefamilyshoppinglist.model.Item
 import com.example.awesomefamilyshoppinglist.model.RemoteItem
+import com.example.awesomefamilyshoppinglist.model.User
 import com.example.awesomefamilyshoppinglist.repositories.CategoryRepository
 import com.example.awesomefamilyshoppinglist.repositories.FamilyRepository
 import com.example.awesomefamilyshoppinglist.repositories.ItemsRepository
@@ -26,7 +27,7 @@ open class MainViewModelImpl(
 ) : BaseViewModel(application), MainContract.ViewModel {
 
     override val version = "v" + BuildConfig.VERSION_NAME
-    override val firebaseUserLiveData: LiveData<FirebaseUser> = useCases.firebaseUserLiveData
+    override val firebaseUserLiveData: LiveData<User> = useCases.firebaseUserLiveData
     override val itemsLiveData: LiveData<ArrayList<BaseItemViewModel>> = useCases.itemsLiveData
 
     override fun loadItems() {

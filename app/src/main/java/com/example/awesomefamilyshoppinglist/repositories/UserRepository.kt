@@ -15,12 +15,14 @@ import io.reactivex.Completable
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
+import timber.log.Timber
+import java.util.*
 
 
 interface UserRepository {
-    val firebaseUserLiveData: LiveData<FirebaseUser>
+    val firebaseUserLiveData: LiveData<User>
     var familyUsers: List<User>
-    fun getCurrentFirebaseUser(): Single<FirebaseUser>
+    fun getCurrentFirebaseUser(): Single<User>
     fun getRemoteUser(userUid: String, observeOn: Scheduler): Single<RemoteUser>
     fun logout(): Completable
     fun uploadUser(firebaseUser: FirebaseUser): Completable
@@ -37,16 +39,16 @@ open class UserRepositoryImpl(
     private val FIELD_FAMILIES = "families"
     private val PATH_FAMILY = "/family/%s"
 
-    private val internalFirebaseUserLiveData = MutableLiveData<FirebaseUser>()
+    private val internalFirebaseUserLiveData = MutableLiveData<User>()
     override var familyUsers = listOf<User>()
-    override val firebaseUserLiveData: LiveData<FirebaseUser> = internalFirebaseUserLiveData
+    override val firebaseUserLiveData: LiveData<User> = internalFirebaseUserLiveData
 
-    override fun getCurrentFirebaseUser(): Single<FirebaseUser> = Single.create { e: SingleEmitter<FirebaseUser> ->
-        val user = firebaseAuth.currentUser
+    override fun getCurrentFirebaseUser(): Single<User> = Single.create { e: SingleEmitter<User> ->
+        val user = userMapper.to(firebaseAuth.currentUser)
         if (user != null) {
             internalFirebaseUserLiveData.postValue(user)//this will get called before user moves from splash screen
             e.onSuccess(user)
-        } else e.onError(FirebaseNoSignedInUserException("RemoteUser is null"))
+        } else e.onError(FirebaseNoSignedInUserException("RemoteUser is null or map to user failed"))
     }
 
     override fun getRemoteUser(userUid: String, observeOn: Scheduler): Single<RemoteUser> {
@@ -93,10 +95,27 @@ open class UserMapper {
             remote.name,
             remote.createdAt.toDate(),
             remote.email,
-            remote.profilePitureUrl
+            remote.profilePictureUrl
         )
         if (families != null) user.families = families.toMutableList()
         return user
+    }
+
+    fun to(firebaseUser: FirebaseUser?): User? {
+        return try {
+            User(
+                "",
+                firebaseUser!!.displayName!!,
+                Date(firebaseUser.metadata!!.creationTimestamp),
+                firebaseUser.email!!,
+                firebaseUser.photoUrl?.toString(),
+                mutableListOf(),
+                firebaseUser.uid
+            )
+        } catch (e: Throwable) {
+            Timber.e(e)
+            null
+        }
     }
 
     fun to(remotes: List<RemoteUser>) = remotes.map { remote -> to(remote) }
