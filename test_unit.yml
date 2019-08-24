@@ -10,7 +10,7 @@ inputs:
 - name: repo
 
 run:
-  path: gradlew
+  path: sh
   args:
-    - testDebugUnitTest
+    - repo/gradlew testDebugUnitTest
 
